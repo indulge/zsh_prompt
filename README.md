@@ -10,13 +10,13 @@ and a right-side clock, wrapped in cheerful color palettes you can switch live.
 One command, anywhere:
 
 ```sh
-git clone <repo-url> ~/.prompt && ~/.prompt/install.sh
+git clone https://github.com/indulge/zsh_prompt.git ~/.prompt && ~/.prompt/install.sh
 ```
 
 Or install into any path and start on a chosen theme:
 
 ```sh
-git clone <repo-url> ~/dotfiles/prompt && ~/dotfiles/prompt/install.sh ocean
+git clone https://github.com/indulge/zsh_prompt.git ~/dotfiles/prompt && ~/dotfiles/prompt/install.sh ocean
 ```
 
 The installer adds one managed block to your `~/.zshrc` (idempotent — safe to
