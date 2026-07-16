@@ -1,0 +1,162 @@
+# quotes/ramayan.txt — श्रीरामचरितमानस — तुलसीदास (famous stanzas across the kands) (offline, UTF-8)
+# Triple-recalled and refereed for textual accuracy.
+@title श्रीरामचरितमानस
+@icon 🏹
+@ramp 93 99 141 177 213 219 220 214
+@art █▀█ ▄▀█ █▀▄▀█ ▄▀█ █▄█ ▄▀█ █▄░█
+@art █▀▄ █▀█ █░▀░█ █▀█ ░█░ █▀█ █░▀█
+
+[1]
+t: चौपाई · बालकाण्ड
+v: बंदउँ बालरूप सोइ रामू।
+v: सब सिधि सुलभ जपत जिसु नामू॥
+v: मंगल भवन अमंगल हारी।
+v: द्रवउ सो दसरथ अजिर बिहारी॥
+hi: मैं उन बालरूप श्रीराम की वंदना करता हूँ, जिनका नाम जपते ही
+hi: सारी सिद्धियाँ सहज ही सुलभ हो जाती हैं। वे मंगल के धाम और सब
+hi: अमंगलों को हरने वाले हैं; दशरथ जी के आँगन में खेलने वाले वे
+hi: प्रभु मुझ पर कृपा करें।
+en: I bow to Ram in his child form, the mere repetition of whose
+en: name brings every attainment within easy reach. Abode of all
+en: blessing, remover of every ill — may he who plays in Dasharath's
+en: courtyard melt with compassion toward me.
+
+[2]
+t: चौपाई · बालकाण्ड
+v: होइहि सोइ जो राम रचि राखा।
+v: को करि तर्क बढ़ावै साखा॥
+v: अस कहि लगे जपन हरिनामा।
+v: गईं सती जहँ प्रभु सुखधामा॥
+hi: जो कुछ श्रीराम ने रच रखा है, वही होकर रहेगा; फिर तर्क-वितर्क
+hi: करके बात की शाखाएँ कौन बढ़ाए? ऐसा कहकर शिवजी हरि का नाम जपने
+hi: लगे, और सती वहाँ गईं जहाँ सुखधाम प्रभु श्रीराम थे।
+en: Whatever Ram has ordained is what shall come to pass — who,
+en: then, would multiply the branches of argument? So saying, Shiva
+en: began repeating Hari's name, while Sati went to where the Lord,
+en: the abode of bliss, was.
+
+[3]
+t: अर्धाली · अयोध्याकाण्ड
+v: रघुकुल रीति सदा चलि आई।
+v: प्रान जाहुँ बरु बचनु न जाई॥
+hi: रघुकुल में सदा से यही रीति चली आई है कि प्राण भले ही चले जाएँ,
+hi: पर दिया हुआ वचन कभी नहीं टूटता। लोक में प्रसिद्ध कहावत "प्राण
+hi: जाए पर वचन न जाई" इसी अर्धाली का सरल रूप है।
+en: Such has ever been the way of the House of Raghu: life itself
+en: may be surrendered, but the given word is never broken. The
+en: popular saying "praan jaaye par vachan na jaayi" is a modern
+en: rendering of this very half-verse.
+
+[4]
+t: चौपाई · उत्तरकाण्ड
+v: परहित सरिस धर्म नहिं भाई।
+v: पर पीड़ा सम नहिं अधमाई॥
+v: निर्नय सकल पुरान बेद कर।
+v: कहेउँ तात जानहिं कोबिद नर॥
+hi: हे भाई! दूसरों की भलाई करने के समान कोई धर्म नहीं है, और
+hi: दूसरों को दुःख पहुँचाने के समान कोई नीचता नहीं। हे तात! यही सब
+hi: वेदों और पुराणों का निर्णय है, जिसे मैंने कह दिया; विद्वान लोग
+hi: इसे भली-भाँति जानते हैं।
+en: Brother, there is no dharma like doing good to others, and no
+en: baseness like causing others pain. This, dear one, is the
+en: settled verdict of all the Vedas and Puranas — I have declared
+en: it, and the wise know it well.
+
+[5]
+t: चौपाई · बालकाण्ड
+v: आकर चारि लाख चौरासी।
+v: जाति जीव जल थल नभ बासी॥
+v: सीय राममय सब जग जानी।
+v: करउँ प्रनाम जोरि जुग पानी॥
+hi: चार प्रकार की उत्पत्तियों वाली चौरासी लाख योनियों के जीव जल,
+hi: थल और आकाश में बसते हैं। इन सबसे भरे समस्त संसार को सीताराममय
+hi: जानकर मैं दोनों हाथ जोड़कर सबको प्रणाम करता हूँ।
+en: Beings of eighty-four lakh species, arising from the four modes
+en: of birth, dwell in the waters, on land and in the sky. Knowing
+en: this entire world to be pervaded by Sita and Ram, I join my two
+en: palms and bow to all.
+
+[6]
+t: चौपाई · बालकाण्ड
+v: जिन्ह कें रही भावना जैसी।
+v: प्रभु मूरति तिन्ह देखी तैसी॥
+v: देखहिं रूप महा रनधीरा।
+v: मनहुँ बीर रसु धरें सरीरा॥
+hi: जनकपुर की सभा में जिसके मन में जैसी भावना थी, उसने प्रभु राम
+hi: की मूर्ति वैसी ही देखी। बड़े-बड़े रणधीर योद्धाओं ने उनके रूप
+hi: को ऐसे देखा मानो स्वयं वीर रस ही शरीर धारण करके खड़ा हो।
+hi: (लोकप्रचलित 'जाकी रही भावना जैसी, प्रभु मूरति देखी तिन तैसी'
+hi: इसी चौपाई का लोक-रूप है।)
+en: Each beheld the Lord's form according to the feeling within his
+en: own heart: in Janak's assembly the battle-hardened warriors
+en: gazed on him as though the heroic sentiment itself had taken on
+en: a body. (The famous quotation "jaaki rahi bhavana jaisi" is a
+en: folk adaptation of this chaupai.)
+
+[7]
+t: चौपाई · उत्तरकाण्ड
+v: बड़े भाग मानुष तनु पावा।
+v: सुर दुर्लभ सब ग्रंथन्हि गावा॥
+v: साधन धाम मोच्छ कर द्वारा।
+v: पाइ न जेहिं परलोक सँवारा॥
+hi: बड़े भाग्य से यह मनुष्य-शरीर मिला है; सभी ग्रंथ गाते हैं कि यह
+hi: देवताओं के लिए भी दुर्लभ है। यह शरीर साधना का घर और मोक्ष का
+hi: द्वार है — इसे पाकर भी जिसने अपना परलोक नहीं सँवारा, उसका जन्म
+hi: व्यर्थ गया।
+en: By great good fortune is this human body gained; all the
+en: scriptures sing that even the gods find it hard to win. It is
+en: the abode of spiritual striving and the very gateway to
+en: liberation — pitiable indeed is the one who, having received it,
+en: fails to secure the world beyond.
+
+[8]
+t: चौपाई · अरण्यकाण्ड
+v: धीरज धर्म मित्र अरु नारी।
+v: आपद काल परिखिअहिं चारी॥
+hi: धैर्य, धर्म, मित्र और स्त्री — इन चारों की सच्ची परख विपत्ति
+hi: के समय ही होती है। सुख के दिनों में तो सब साथ दिखते हैं; संकट
+hi: ही इनकी असली कसौटी है। यह वचन अरण्यकाण्ड में सती अनसूया सीताजी
+hi: को उपदेश देते हुए कहती हैं।
+en: Fortitude, righteousness, a friend and a wife — these four are
+en: truly tested only in the hour of adversity. In days of ease all
+en: seem steadfast; calamity alone is their touchstone. Anasuya, the
+en: sage Atri's wife, speaks these words to Sita in the Aranya Kand.
+
+[9]
+t: चौपाई · बालकाण्ड
+v: बिनु सतसंग बिबेक न होई।
+v: राम कृपा बिनु सुलभ न सोई॥
+v: सतसंगति मुद मंगल मूला।
+v: सोइ फल सिधि सब साधन फूला॥
+hi: सत्संग के बिना विवेक नहीं होता, और वह सत्संग श्रीराम की कृपा
+hi: के बिना सहज में नहीं मिलता। सत्संगति ही आनंद और कल्याण की जड़
+hi: है — वही फल और सिद्धि है, बाकी सारे साधन तो केवल फूल हैं।
+en: Without the company of the good there is no discernment, and
+en: that company is not easily gained without Rama's grace.
+en: Fellowship with the holy is the very root of joy and blessing —
+en: it alone is the fruit and fulfilment; all other spiritual
+en: practices are merely the blossom.
+
+[10]
+t: अर्धाली · अयोध्याकाण्ड
+v: करम प्रधान बिस्व करि राखा।
+v: जो जस करइ सो तस फलु चाखा॥
+hi: ईश्वर ने इस संसार को कर्म-प्रधान बनाया है; जो जैसा कर्म करता
+hi: है, वह वैसा ही फल चखता है। यह बात देवगुरु बृहस्पति इन्द्र को
+hi: समझाते हुए कहते हैं कि प्रभु स्वयं निष्पक्ष हैं — सुख-दुख
+hi: हमारे अपने कर्मों का ही परिणाम है।
+en: The Lord has fashioned this world with karma as its sovereign
+en: law: as one acts, so is the fruit one tastes. Brihaspati says
+en: this to Indra — God Himself is impartial; our joys and sorrows
+en: are the harvest of our own deeds.
+
+[11]
+t: चौपाई · अरण्यकाण्ड
+v: उमा कहउँ मैं अनुभव अपना।
+v: सत हरि भजनु जगत सब सपना॥
+hi: शिवजी पार्वतीजी से कहते हैं — हे उमा! मैं तुम्हें अपना निजी
+hi: अनुभव कहता हूँ: सत्य केवल श्रीहरि का भजन है; यह सारा संसार तो
+hi: स्वप्न के समान मिथ्या है।
+en: Shiva says to Uma: I tell you from my own experience — the
+en: worship of Hari alone is real; this whole world is nothing but a
+en: dream.

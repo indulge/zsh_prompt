@@ -4,7 +4,7 @@
 #
 #   git clone https://github.com/indulge/zsh_prompt.git ~/.prompt && ~/.prompt/install.sh
 #
-# Optional: pick a starting theme  ->  ~/.prompt/install.sh ocean
+# Optional: pick a starting theme  ->  ~/.prompt/install.sh peacock
 
 set -eu
 
@@ -38,4 +38,5 @@ rm -f "$tmp"
 
 printf '\n\033[38;5;213m✦ prompt.sh installed\033[0m  (%s)\n' "$DIR"
 printf '  Restart your shell or run:  \033[38;5;045msource %s\033[0m\n' "$ZSHRC"
-printf '  Then:  \033[38;5;045mprompt-theme gallery\033[0m  to browse,  \033[38;5;045mprompt-theme <name>\033[0m to pick.\n\n'
+printf '  Then:  \033[38;5;045mprompt-theme gallery\033[0m  to browse,  \033[38;5;045mprompt-theme <name>\033[0m to pick.\n'
+printf '  And:   \033[38;5;220mshlok\033[0m  for a verse — Gita, Ramayan, Sundarkand, Chalisa — any time.\n\n'

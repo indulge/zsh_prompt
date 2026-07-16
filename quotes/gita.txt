@@ -1,0 +1,315 @@
+# quotes/gita.txt — श्रीमद्भगवद्गीता (offline, UTF-8)
+# Triple-recalled and refereed for textual accuracy.
+@title श्रीमद्भगवद्गीता
+@icon ॐ
+@ramp 166 202 208 214 220 226 220 214
+@art █▀▀ █ ▀█▀ ▄▀█
+@art █▄█ █ ░█░ █▀█
+
+[2.14]
+t: अध्याय २ · श्लोक १४
+v: मात्रास्पर्शास्तु कौन्तेय शीतोष्णसुखदुःखदाः ।
+v: आगमापायिनोऽनित्यास्तांस्तितिक्षस्व भारत ॥
+hi: हे कुन्तीपुत्र, इन्द्रियों का अपने विषयों से स्पर्श ही
+hi: सर्दी-गर्मी और सुख-दुःख का कारण बनता है। ये अनुभव आने-जाने
+hi: वाले और अनित्य हैं, इसलिए हे भारत, इन्हें धैर्यपूर्वक सहन करो।
+en: O son of Kunti, it is only the contact of the senses with their
+en: objects that produces cold and heat, pleasure and pain. These
+en: experiences arrive and depart; they are impermanent — bear them
+en: with patience, O Bharata.
+
+[2.20]
+t: अध्याय २ · श्लोक २०
+v: न जायते म्रियते वा कदाचिन्नायं भूत्वा भविता वा न भूयः ।
+v: अजो नित्यः शाश्वतोऽयं पुराणो न हन्यते हन्यमाने शरीरे ॥
+hi: आत्मा का न कभी जन्म होता है, न कभी मृत्यु; ऐसा भी नहीं कि वह
+hi: एक बार होकर फिर कभी न रहे। यह अजन्मा, नित्य, शाश्वत और पुरातन
+hi: है — शरीर के नष्ट हो जाने पर भी इसका नाश नहीं होता।
+en: The self is never born and never dies; nor, having once been,
+en: does it ever cease to be. Unborn, eternal, abiding and
+en: primordial, it is not slain when the body is slain.
+
+[2.22]
+t: अध्याय २ · श्लोक २२
+v: वासांसि जीर्णानि यथा विहाय नवानि गृह्णाति नरोऽपराणि ।
+v: तथा शरीराणि विहाय जीर्णान्यन्यानि संयाति नवानि देही ॥
+hi: जैसे मनुष्य पुराने और फटे कपड़े उतारकर नए कपड़े पहन लेता है,
+hi: वैसे ही आत्मा पुराने पड़ चुके शरीर को त्यागकर नया शरीर धारण कर
+hi: लेती है। शरीर बदलता है, पर आत्मा वही रहती है।
+en: As a person sheds worn-out clothes and puts on fresh ones, so
+en: the embodied self leaves behind a body grown old and passes into
+en: a new one. The garment changes; the wearer endures.
+
+[2.23]
+t: अध्याय २ · श्लोक २३
+v: नैनं छिन्दन्ति शस्त्राणि नैनं दहति पावकः ।
+v: न चैनं क्लेदयन्त्यापो न शोषयति मारुतः ॥
+hi: इस आत्मा को न कोई शस्त्र काट सकता है, न अग्नि इसे जला सकती है।
+hi: न जल इसे गीला कर सकता है और न वायु इसे सुखा सकती है — आत्मा हर
+hi: प्रकार के नाश से परे है।
+en: No weapon can cleave this Self, nor can fire burn it; water
+en: cannot moisten it, nor can the wind wither it away. The Self
+en: stands beyond the reach of every force that destroys.
+
+[2.38]
+t: अध्याय २ · श्लोक ३८
+v: सुखदुःखे समे कृत्वा लाभालाभौ जयाजयौ ।
+v: ततो युद्धाय युज्यस्व नैवं पापमवाप्स्यसि ॥
+hi: सुख और दुःख, लाभ और हानि, जीत और हार — इन सबको एक समान समझकर
+hi: युद्ध के लिए खड़े हो जाओ। इस भाव से कर्म करने पर तुम्हें कोई
+hi: पाप नहीं लगेगा।
+en: Holding pleasure and pain, gain and loss, victory and defeat as
+en: one and the same, arise and engage in battle; fighting with such
+en: equanimity, you will incur no sin.
+
+[2.47]
+t: अध्याय २ · श्लोक ४७
+v: कर्मण्येवाधिकारस्ते मा फलेषु कदाचन ।
+v: मा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि ॥
+hi: तुम्हारा अधिकार केवल अपना कर्म करने में है, उसके फल पर कभी
+hi: नहीं। इसलिए फल की चाह को कर्म का कारण मत बनाओ, और न ही कर्म
+hi: छोड़ देने का मोह रखो।
+en: You have a claim on your actions alone, never on their fruits.
+en: Let no desire for results drive what you do, yet never let that
+en: draw you toward abandoning action itself.
+
+[2.48]
+t: अध्याय २ · श्लोक ४८
+v: योगस्थः कुरु कर्माणि सङ्गं त्यक्त्वा धनञ्जय ।
+v: सिद्ध्यसिद्ध्योः समो भूत्वा समत्वं योग उच्यते ॥
+hi: हे धनंजय! योग में स्थित होकर, आसक्ति छोड़कर और सफलता-असफलता को
+hi: एक समान मानकर अपने कर्म करो। मन की यही समता योग कहलाती है।
+en: Steadfast in yoga, O Dhananjaya, do your work, letting go of
+en: attachment and staying balanced alike in success and failure.
+en: That very evenness of mind is what is called yoga.
+
+[2.50]
+t: अध्याय २ · श्लोक ५०
+v: बुद्धियुक्तो जहातीह उभे सुकृतदुष्कृते ।
+v: तस्माद्योगाय युज्यस्व योगः कर्मसु कौशलम् ॥
+hi: जिसकी बुद्धि समता में स्थिर है, वह इसी जीवन में पुण्य और पाप
+hi: दोनों के बंधन से मुक्त हो जाता है। इसलिए तुम योग में लग जाओ,
+hi: क्योंकि कर्मों में कुशलता ही योग है।
+en: One whose understanding rests in equanimity sheds both good and
+en: evil deeds even in this life. Therefore strive for yoga, for
+en: yoga is skill in action.
+
+[2.62-63]
+t: अध्याय २ · श्लोक ६२–६३
+v: ध्यायतो विषयान्पुंसः सङ्गस्तेषूपजायते ।
+v: सङ्गात्सञ्जायते कामः कामात्क्रोधोऽभिजायते ॥
+v:
+v: क्रोधाद्भवति सम्मोहः सम्मोहात्स्मृतिविभ्रमः ।
+v: स्मृतिभ्रंशाद्बुद्धिनाशो बुद्धिनाशात्प्रणश्यति ॥
+hi: विषयों का लगातार चिंतन करने से मनुष्य में उनके प्रति आसक्ति
+hi: जन्म लेती है; आसक्ति से कामना और कामना (के अधूरे रह जाने) से
+hi: क्रोध पैदा होता है। क्रोध से मूढ़ता आती है, मूढ़ता से स्मृति
+hi: भ्रमित होती है, स्मृति के बिगड़ने से बुद्धि नष्ट हो जाती है —
+hi: और बुद्धि के नष्ट होते ही मनुष्य का पतन हो जाता है।
+en: As a person keeps dwelling on the objects of the senses,
+en: attachment to them takes root; attachment ripens into desire,
+en: and desire, when thwarted, flares into anger. Anger clouds the
+en: mind into delusion, delusion scrambles memory, broken memory
+en: destroys the discerning intellect — and with discernment gone,
+en: the person is lost.
+
+[2.69]
+t: अध्याय २ · श्लोक ६९
+v: या निशा सर्वभूतानां तस्यां जागर्ति संयमी ।
+v: यस्यां जाग्रति भूतानि सा निशा पश्यतो मुनेः ॥
+hi: जो आत्मज्ञान सब प्राणियों के लिए रात के अंधकार जैसा है, उसमें
+hi: संयमी पुरुष जागता रहता है; और जिन विषय-भोगों में सारे प्राणी
+hi: जागते हैं, वे तत्त्व देखने वाले मुनि के लिए रात के समान हैं।
+hi: अर्थात् ज्ञानी की दृष्टि और संसारी की दृष्टि एक-दूसरे से
+hi: बिल्कुल उलटी होती है।
+en: What is night to all beings — the truth of the Self — there the
+en: disciplined one keeps awake; and where all beings are awake —
+en: the world of sense pleasures — that is night to the sage who
+en: sees. The seer and the worldly live in inverted days and nights:
+en: what one calls light, the other knows as darkness.
+
+[2.70]
+t: अध्याय २ · श्लोक ७०
+v: आपूर्यमाणमचलप्रतिष्ठं समुद्रमापः प्रविशन्ति यद्वत् ।
+v: तद्वत्कामा यं प्रविशन्ति सर्वे स शान्तिमाप्नोति न कामकामी ॥
+hi: जैसे सब ओर से भरता हुआ भी समुद्र अपनी मर्यादा में अचल रहता है
+hi: और नदियों का जल उसमें समा जाता है, वैसे ही जिस मनुष्य में सारी
+hi: कामनाएँ बिना हलचल मचाए समा जाती हैं, वही सच्ची शांति पाता है।
+hi: कामनाओं के पीछे दौड़ने वाले को शांति कभी नहीं मिलती।
+en: Just as rivers pour into the ocean, which stays full and
+en: unshaken though ever being filled, so the person whom desires
+en: enter without stirring attains peace — never the one who runs
+en: after desires.
+
+[3.19]
+t: अध्याय ३ · श्लोक १९
+v: तस्मादसक्तः सततं कार्यं कर्म समाचर ।
+v: असक्तो ह्याचरन्कर्म परमाप्नोति पूरुषः ॥
+hi: इसलिए बिना आसक्ति के अपने कर्तव्य का पालन सदा अच्छी तरह करते
+hi: रहो। जो मनुष्य अनासक्त भाव से कर्म करता है, वह परमात्मा को पा
+hi: लेता है।
+en: Therefore, free of attachment, steadily perform the work that is
+en: yours to do; for the one who acts without clinging to results
+en: reaches the Supreme.
+
+[3.35]
+t: अध्याय ३ · श्लोक ३५
+v: श्रेयान्स्वधर्मो विगुणः परधर्मात्स्वनुष्ठितात् ।
+v: स्वधर्मे निधनं श्रेयः परधर्मो भयावहः ॥
+hi: दूसरे के धर्म को कितनी भी अच्छी तरह क्यों न निभाया जाए, उससे
+hi: अपना धर्म — चाहे उसमें कमियाँ हों — कहीं बेहतर है। अपने धर्म
+hi: का पालन करते हुए मृत्यु भी कल्याणकारी है, जबकि दूसरे का धर्म
+hi: अपनाना भय का कारण बनता है।
+en: One's own duty, however flawed, is better than another's duty
+en: carried out to perfection. Even to die while walking one's own
+en: path is a blessing, for the path of another invites only fear.
+
+[4.7-8]
+t: अध्याय ४ · श्लोक ७–८
+v: यदा यदा हि धर्मस्य ग्लानिर्भवति भारत ।
+v: अभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम् ॥
+v:
+v: परित्राणाय साधूनां विनाशाय च दुष्कृताम् ।
+v: धर्मसंस्थापनार्थाय सम्भवामि युगे युगे ॥
+hi: हे भारत, जब-जब धर्म का ह्रास होता है और अधर्म सिर उठाता है,
+hi: तब-तब मैं अपने आप को प्रकट करता हूँ। सज्जनों की रक्षा, दुष्टों
+hi: के नाश और धर्म को फिर से दृढ़ करने के लिए मैं हर युग में जन्म
+hi: लेता हूँ।
+en: Whenever dharma withers and unrighteousness surges, O Bharata, I
+en: send Myself forth into the world. To shelter the good, to bring
+en: down the wicked, and to set righteousness firmly in place again,
+en: I take birth in age after age.
+
+[4.38]
+t: अध्याय ४ · श्लोक ३८
+v: न हि ज्ञानेन सदृशं पवित्रमिह विद्यते ।
+v: तत्स्वयं योगसंसिद्धः कालेनात्मनि विन्दति ॥
+hi: इस संसार में ज्ञान के समान पवित्र करने वाली कोई वस्तु नहीं है।
+hi: जो साधक योग में परिपक्व हो जाता है, वह समय आने पर उस ज्ञान को
+hi: स्वयं अपने ही भीतर पा लेता है।
+en: Nothing in this world purifies as knowledge does. One who has
+en: ripened in yoga discovers that knowledge, in time, within their
+en: own self.
+
+[5.10]
+t: अध्याय ५ · श्लोक १०
+v: ब्रह्मण्याधाय कर्माणि सङ्गं त्यक्त्वा करोति यः ।
+v: लिप्यते न स पापेन पद्मपत्रमिवाम्भसा ॥
+hi: जो मनुष्य अपने सभी कर्म ब्रह्म को समर्पित करके, फल की आसक्ति
+hi: छोड़कर कर्म करता है, उसे पाप उसी तरह छू नहीं पाता जैसे कमल के
+hi: पत्ते को पानी छू नहीं पाता।
+en: He who performs his duties placing them all in Brahman, having
+en: let go of attachment, remains unstained by sin — just as a lotus
+en: leaf rests on water yet is never wetted by it.
+
+[6.5]
+t: अध्याय ६ · श्लोक ५
+v: उद्धरेदात्मनात्मानं नात्मानमवसादयेत् ।
+v: आत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मनः ॥
+hi: मनुष्य स्वयं अपने प्रयत्न से अपना उद्धार करे, अपने आप को कभी
+hi: गिरने न दे। क्योंकि मनुष्य आप ही अपना मित्र है और आप ही अपना
+hi: शत्रु भी।
+en: One should lift oneself up by one's own self, and never let
+en: oneself sink low; for the self alone is one's true friend, and
+en: the self alone one's enemy.
+
+[6.6]
+t: अध्याय ६ · श्लोक ६
+v: बन्धुरात्मात्मनस्तस्य येनात्मैवात्मना जितः ।
+v: अनात्मनस्तु शत्रुत्वे वर्तेतात्मैव शत्रुवत् ॥
+hi: जिसने स्वयं के द्वारा अपने आप को जीत लिया है, उसके लिए उसका
+hi: अपना आपा मित्र होता है। पर जिसने स्वयं पर विजय नहीं पाई, उसके
+hi: लिए वही आपा शत्रु के समान बर्ताव करता है।
+en: For one who has conquered the self by the self, that very self
+en: is a friend; but for one who has failed to master the self, it
+en: stands in enmity, acting like a foe.
+
+[6.19]
+t: अध्याय ६ · श्लोक १९
+v: यथा दीपो निवातस्थो नेङ्गते सोपमा स्मृता ।
+v: योगिनो यतचित्तस्य युञ्जतो योगमात्मनः ॥
+hi: जैसे हवा से बचे स्थान पर रखा दीपक टिमटिमाता नहीं, स्थिर जलता
+hi: रहता है, वैसा ही उस योगी का वश में किया हुआ मन होता है जो
+hi: आत्मा के योग के अभ्यास में लगा रहता है। यही उपमा शास्त्रों में
+hi: ऐसे योगी के लिए दी गई है।
+en: Just as a lamp set where no wind blows stands steady without a
+en: flicker, so is the mastered mind of the yogi who remains
+en: absorbed in union with the Self — this is the simile the wise
+en: have handed down.
+
+[6.35]
+t: अध्याय ६ · श्लोक ३५
+v: असंशयं महाबाहो मनो दुर्निग्रहं चलम् ।
+v: अभ्यासेन तु कौन्तेय वैराग्येण च गृह्यते ॥
+hi: हे महाबाहु अर्जुन, इसमें कोई संदेह नहीं कि मन चंचल है और उसे
+hi: रोक पाना बहुत कठिन है। फिर भी हे कुन्तीपुत्र, निरन्तर अभ्यास
+hi: और वैराग्य के द्वारा इसे वश में किया जा सकता है।
+en: Without doubt, O mighty-armed one, the mind is restless and
+en: difficult to subdue. Yet, O son of Kunti, it is tamed by steady
+en: practice and by dispassion.
+
+[9.22]
+t: अध्याय ९ · श्लोक २२
+v: अनन्याश्चिन्तयन्तो मां ये जनाः पर्युपासते ।
+v: तेषां नित्याभियुक्तानां योगक्षेमं वहाम्यहम् ॥
+hi: जो भक्त अनन्य भाव से, किसी और का चिन्तन किए बिना, निरन्तर मेरी
+hi: उपासना करते हैं, उन नित्य मुझमें लगे हुए जनों का योगक्षेम — जो
+hi: उनके पास नहीं है उसे पहुँचाना और जो है उसकी रक्षा करना — मैं
+hi: स्वयं अपने ऊपर लेता हूँ।
+en: Those who worship Me with undivided hearts, thinking of nothing
+en: else, remaining ever united with Me — for them I Myself bear the
+en: burden of bringing what they lack and safeguarding what they
+en: possess.
+
+[9.26]
+t: अध्याय ९ · श्लोक २६
+v: पत्रं पुष्पं फलं तोयं यो मे भक्त्या प्रयच्छति ।
+v: तदहं भक्त्युपहृतमश्नामि प्रयतात्मनः ॥
+hi: जो कोई शुद्ध मन से मुझे भक्तिपूर्वक एक पत्ता, फूल, फल या जल भी
+hi: अर्पित करता है, उसकी वह प्रेम-भरी भेंट मैं सहर्ष ग्रहण करता
+hi: हूँ। भगवान के लिए भेंट का मूल्य नहीं, अर्पित करने वाले का भाव
+hi: महत्त्व रखता है।
+en: Whoever offers Me with true devotion even a leaf, a flower, a
+en: fruit, or a little water — that heartfelt gift of a pure-souled
+en: devotee I gladly partake of. It is not the offering but the love
+en: behind it that reaches Me.
+
+[12.13-14]
+t: अध्याय १२ · श्लोक १३–१४
+v: अद्वेष्टा सर्वभूतानां मैत्रः करुण एव च ।
+v: निर्ममो निरहङ्कारः समदुःखसुखः क्षमी ॥
+v:
+v: सन्तुष्टः सततं योगी यतात्मा दृढनिश्चयः ।
+v: मय्यर्पितमनोबुद्धिर्यो मद्भक्तः स मे प्रियः ॥
+hi: जो किसी भी प्राणी से द्वेष नहीं करता, सबका मित्र और दयालु है,
+hi: ममता और अहंकार से मुक्त है, सुख-दुःख में समान रहता है और
+hi: क्षमाशील है — ऐसा योगी जो सदा संतुष्ट है, अपने मन को वश में
+hi: रखता है, जिसका निश्चय अटल है, और जिसने मन-बुद्धि मुझे सौंप दिए
+hi: हैं, वही मेरा भक्त मुझे प्रिय है।
+en: He who hates no creature, who is friendly and compassionate to
+en: all, free of "mine" and "I", the same in sorrow and joy, and
+en: patient of wrong — that yogi, ever content and self-restrained,
+en: unshakable in resolve, his mind and understanding given over to
+en: Me, that devotee of Mine is dear to Me.
+
+[18.66]
+t: अध्याय १८ · श्लोक ६६
+v: सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज ।
+v: अहं त्वा सर्वपापेभ्यो मोक्षयिष्यामि मा शुचः ॥
+hi: सारे धर्मों और सहारों की चिंता छोड़कर बस मेरी शरण में आ जा।
+hi: मैं तुझे सभी पापों से छुड़ा दूँगा, इसलिए शोक मत कर।
+en: Set aside every duty and every other refuge, and come to Me
+en: alone for shelter. I will release you from all sin — grieve no
+en: more.
+
+[18.78]
+t: अध्याय १८ · श्लोक ७८
+v: यत्र योगेश्वरः कृष्णो यत्र पार्थो धनुर्धरः ।
+v: तत्र श्रीर्विजयो भूतिर्ध्रुवा नीतिर्मतिर्मम ॥
+hi: जहाँ योगेश्वर श्रीकृष्ण हैं और जहाँ धनुर्धारी अर्जुन हैं, वहीं
+hi: लक्ष्मी है, विजय है, ऐश्वर्य है और अचल नीति है — ऐसा मेरा दृढ़
+hi: मत है।
+en: Wherever Krishna, the master of yoga, stands, and wherever
+en: Arjuna holds his bow — there dwell fortune, victory, prosperity,
+en: and unshakeable righteousness; of this I am certain.
+

@@ -1,47 +1,46 @@
-# banner.zsh — a super-colorful ASCII-art startup banner (dependency-free).
-# Sourced by init.zsh, which calls `prompt-banner` once at shell startup.
+# banner.zsh — the startup banner: gradient block-art NAMASTE, a day-part
+# greeting in Hindi, the real moon's phase (computed offline in init.zsh),
+# and a line of system info. Sourced by init.zsh; fully dependency-free.
 
-# A smooth-ish rainbow ramp of 256-color indices.
-typeset -ga _pr_banner_ramp=(196 202 208 214 220 190 154 84 43 45 39 63 99 135 171 207 213)
-
-# Print a string with a per-character rainbow gradient (offset by $2 for motion).
-_pr_grad() {
-    local s=$1 off=${2:-0} n=${#_pr_banner_ramp} i c
-    for (( i = 1; i <= ${#s}; i++ )); do
-        c=${_pr_banner_ramp[ (( (i + off - 1) % n ) + 1 ) ]}
-        print -Pn "%F{$c}${s[i]}%f"
-    done
-    print
-}
+# Peacock ramp for the art — indigo → sapphire → turquoise → emerald → gold.
+typeset -ga _pr_banner_ramp=(27 33 39 45 44 43 42 48 84 154 220 214 178 135 99 63)
 
 prompt-banner() {
     [[ -t 1 ]] || return
 
-    # ASCII-art "hello" — each line gets the next hue on the ramp.
+    # NAMASTE in a 2-row block font (pure single-width glyphs — the gradient
+    # never breaks alignment, no Nerd Fonts needed).
     local -a art=(
-'    __         ____'
-'   / /_  ___  / / /___'
-'  / __ \/ _ \/ / / __ \'
-' / / / /  __/ / / /_/ /'
-'/_/ /_/\___/_/_/\____/'
+'█▄░█ ▄▀█ █▀▄▀█ ▄▀█ █▀ ▀█▀ █▀▀'
+'█░▀█ █▀█ █░▀░█ █▀█ ▄█ ░█░ ██▄'
     )
     print
-    local i
+    local -i i
     for (( i = 1; i <= ${#art}; i++ )); do
-        print -Pn '  '; _pr_grad "${art[i]}" $(( (i - 1) * 2 ))
+        print -n '  '; _pr_grad "${art[i]//░/ }" $(( (i - 1) * 3 )) $_pr_banner_ramp
     done
+    print -n '  '; _pr_grad '──────────────✦──────────────' 5 $_pr_banner_ramp
 
-    # A rainbow rule under the art.
-    print -n '  '; _pr_grad '─────────────────────────────' 3
+    # Greeting by hour + today's moon (शुक्ल/कृष्ण पक्ष, पूर्णिमा, अमावस्या).
+    local h=${(%):-%D{%H}}; h=${h#0}
+    local greet icon
+    if   (( h >= 5 && h < 12 )); then greet='सुप्रभात'   icon='🌅'
+    elif (( h >= 12 && h < 17 )); then greet='नमस्ते'     icon='🌞'
+    elif (( h >= 17 && h < 21 )); then greet='शुभ संध्या' icon='🌆'
+    else                               greet='शुभ रात्रि'  icon='🌙'; fi
+    _pr_moon
+    print -P "  ${icon} %F{219}${greet}, %F{213}%n%f%F{243}!%f  %F{242}%D{%a %d %b · %H:%M}%f  ${_pr_moon_icon} %F{111}${_pr_moon_name}%f"
 
-    # System info — pull distro/version like the classic banner did.
-    local distro='' ver='' host=${(%):-%m} user=${(%):-%n}
+    # System info — distro, shell, where you are (os-release parsed in pure zsh).
+    local distro='' ver='' line
     if [[ -r /etc/os-release ]]; then
-        distro=$(sed -n 's/^NAME=//p' /etc/os-release | tr -d '"')
-        ver=$(sed -n 's/^VERSION=//p;s/^VERSION_ID=//p' /etc/os-release | tr -d '"' | head -1)
+        for line in "${(@f)$(</etc/os-release)}"; do
+            case $line in
+                (NAME=*)       distro=${${line#NAME=}//\"/} ;;
+                (VERSION=*)    ver=${${line#VERSION=}//\"/} ;;
+                (VERSION_ID=*) : ${ver:=${${line#VERSION_ID=}//\"/}} ;;
+            esac
+        done
     fi
-    print -P "  %F{213}❄ %F{219}${user}%F{242}@%F{117}${host}%f   %F{242}%D{%a %d %b · %H:%M}%f"
-    print -P "  %F{214}🐧 %F{223}${distro} ${ver}%f   %F{80}🐚 zsh ${ZSH_VERSION}%f"
-    print -P "  %F{141}📂 %F{189}%~%f"
-    print
+    print -P "  %F{242}🐧 ${distro} ${ver} · 🐚 zsh ${ZSH_VERSION} · 💻 %m · 📂 %~%f"
 }

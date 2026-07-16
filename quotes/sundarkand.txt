@@ -1,0 +1,123 @@
+# quotes/sundarkand.txt — सुन्दरकाण्ड — रामचरितमानस (Hanuman's leap, Lanka, and grace) (offline, UTF-8)
+# Triple-recalled and refereed for textual accuracy.
+@title सुन्दरकाण्ड
+@icon 🌊
+@ramp 23 29 36 43 44 45 51 87
+@art █▀ █░█ █▄░█ █▀▄ ▄▀█ █▀█ █▄▀ ▄▀█ █▄░█ █▀▄
+@art ▄█ █▄█ █░▀█ █▄▀ █▀█ █▀▄ █░█ █▀█ █░▀█ █▄▀
+
+[1]
+t: प्रथम चौपाई · जामवंत के वचन
+v: जामवंत के बचन सुहाए। सुनि हनुमंत हृदय अति भाए॥
+v: तब लगि मोहि परिखेहु तुम्ह भाई। सहि दुख कंद मूल फल खाई॥
+v: जब लगि आवौं सीतहि देखी। होइहि काजु मोहि हरष बिसेषी॥
+v: यह कहि नाइ सबन्हि कहुँ माथा। चलेउ हरषि हियँ धरि रघुनाथा॥
+hi: जामवंत के सुंदर वचन सुनकर हनुमानजी के हृदय को बहुत भाए।
+hi: उन्होंने कहा — भाइयो, जब तक मैं सीताजी को देखकर लौट न आऊँ, तब
+hi: तक तुम दुख सहते हुए कंद-मूल-फल खाकर मेरी प्रतीक्षा करना; कार्य
+hi: अवश्य सिद्ध होगा, क्योंकि मुझे विशेष हर्ष हो रहा है। यह कहकर
+hi: सबको प्रणाम कर, हृदय में श्रीरघुनाथजी को धारण किए वे
+hi: हर्षपूर्वक चल पड़े।
+en: Jambavan's heartening words delighted Hanuman to the depths of
+en: his heart. He said: brothers, wait for me here, enduring
+en: hardship and living on roots and fruits, until I return having
+en: seen Sita — the task will surely be accomplished, for a special
+en: joy stirs within me. So saying, he bowed to them all and set
+en: forth in gladness, holding Raghunath in his heart.
+
+[2]
+t: दोहा १ · मैनाक-प्रसंग
+v: हनूमान तेहि परसा कर पुनि कीन्ह प्रनाम।
+v: राम काजु कीन्हें बिनु मोहि कहाँ बिश्राम॥
+hi: समुद्र के कहने पर मैनाक पर्वत हनुमानजी को विश्राम देने के लिए
+hi: ऊपर उठा, पर हनुमानजी ने उसे केवल हाथ से छूकर प्रणाम कर लिया और
+hi: कहा — श्रीराम का काम किए बिना मुझे विश्राम कहाँ? यह पंक्ति
+hi: निष्काम सेवा और कर्तव्यनिष्ठा की अमर उक्ति मानी जाती है।
+en: When Mount Mainaka rose from the sea to offer him rest, Hanuman
+en: merely touched it with his hand and bowed in reverence, saying:
+en: until Rama's work is done, what rest can there be for me? The
+en: line endures as a watchword of selfless devotion to duty.
+
+[3]
+t: चौपाई · लंकिनी के वचन
+v: प्रबिसि नगर कीजे सब काजा। हृदयँ राखि कोसलपुर राजा॥
+v: गरल सुधा रिपु करहिं मिताई। गोपद सिंधु अनल सितलाई॥
+v: गरुड़ सुमेरु रेनु सम ताही। राम कृपा करि चितवा जाही॥
+hi: लंकिनी हनुमानजी से कहती है — कोसलपुर के राजा श्रीराम को हृदय
+hi: में रखकर नगर में प्रवेश करो और अपने सब काम पूरे करो। जिस पर
+hi: श्रीराम ने कृपा-दृष्टि कर दी, उसके लिए विष अमृत बन जाता है,
+hi: शत्रु मित्रता करने लगते हैं, समुद्र गाय के खुर के गड्ढे जितना
+hi: और अग्नि शीतल हो जाती है। हे गरुड़! ऐसे जन के लिए सुमेरु पर्वत
+hi: भी धूल के कण के समान हो जाता है।
+en: Lankini tells Hanuman: enter the city and accomplish all your
+en: work, keeping the King of Kosala enshrined in your heart. For
+en: one on whom Rama casts his gracious glance, poison turns to
+en: nectar, foes offer friendship, the ocean shrinks to a cow's
+en: hoofprint, and fire grows cool; to such a one, O Garuda, Mount
+en: Sumeru is but a speck of dust.
+
+[4]
+t: चौपाई · अशोक वाटिका
+v: राम दूत मैं मातु जानकी। सत्य सपथ करुनानिधान की॥
+v: यह मुद्रिका मातु मैं आनी। दीन्हि राम तुम्ह कहँ सहिदानी॥
+v: नर बानरहि संग कहु कैसें। कही कथा भइ संगति जैसें॥
+hi: हनुमानजी कहते हैं — हे माता जानकी! मैं श्रीराम का दूत हूँ,
+hi: करुणानिधान श्रीराम की सच्ची शपथ खाता हूँ। हे माता, यह अँगूठी
+hi: मैं लाया हूँ; श्रीराम ने इसे आपके लिए निशानी (पहचान) के रूप
+hi: में दिया है। सीताजी ने पूछा — कहो, मनुष्य और वानर का साथ कैसे
+hi: हुआ? तब हनुमानजी ने वह कथा कह सुनाई, जिस प्रकार दोनों की संगति
+hi: हुई थी।
+en: Hanuman says: "Mother Janaki, I am Rama's messenger — I swear it
+en: truly by the Ocean of Compassion himself. This ring, Mother, I
+en: have brought; Rama gave it as a token for you." When Sita asked
+en: how a man and a monkey came to be companions, Hanuman told her
+en: the story of how that fellowship arose.
+
+[5]
+t: चौपाई · सीताजी का आशीर्वाद
+v: अजर अमर गुननिधि सुत होहू। करहुँ बहुत रघुनायक छोहू॥
+v: करहुँ कृपा प्रभु अस सुनि काना। निर्भर प्रेम मगन हनुमाना॥
+hi: सीताजी हनुमानजी को आशीर्वाद देती हैं — हे पुत्र! तुम अजर (कभी
+hi: बूढ़े न होने वाले), अमर और गुणों के भंडार होओ, और श्रीरघुनाथजी
+hi: तुम पर बहुत स्नेह रखें। 'प्रभु कृपा करेंगे' — यह वचन कानों में
+hi: पड़ते ही हनुमानजी अपार प्रेम में डूब गए।
+en: Sita blesses Hanuman: "My son, may you be untouched by age and
+en: death, a treasury of virtues, and may the Lord of the Raghus
+en: cherish you with abounding affection." The instant the words
+en: "may the Lord be gracious to you" reached his ears, Hanuman was
+en: immersed in a boundless flood of love.
+
+[6]
+t: चौपाई · हनुमान-विभीषण संवाद
+v: सुनहु बिभीषन प्रभु कै रीती।
+v: करहिं सदा सेवक पर प्रीती॥
+v: कहहु कवन मैं परम कुलीना।
+v: कपि चंचल सबहीं बिधि हीना॥
+v: प्रात लेइ जो नाम हमारा।
+v: तेहि दिन ताहि न मिलै अहारा॥
+hi: हनुमानजी विभीषण से कहते हैं — हे विभीषण, सुनो! प्रभु की रीति
+hi: ही यह है कि वे अपने सेवक पर सदा प्रेम करते हैं। भला बताओ, मैं
+hi: कौन बड़ा कुलीन हूँ? मैं तो चंचल वानर हूँ, सब प्रकार से हीन —
+hi: ऐसा कि जो सबेरे हमारा नाम ले ले, उस दिन उसे भोजन तक न मिले।
+en: Listen, Vibhishan — it is ever the Lord's way to cherish his
+en: servants with love. Tell me, what high lineage can I claim? I am
+en: but a restless monkey, lowly in every respect — the kind whose
+en: very name, uttered at dawn, is said to cost a man his food for
+en: the day.
+
+[7]
+t: चौपाई · श्रीराम से निरभिमान वचन
+v: साखामृग कै बड़ि मनुसाई। साखा तें साखा पर जाई॥
+v: नाघि सिंधु हाटकपुर जारा। निसिचर गन बधि बिपिन उजारा॥
+v: सो सब तव प्रताप रघुराई। नाथ न कछू मोरि प्रभुताई॥
+hi: श्रीराम की प्रशंसा सुनकर हनुमानजी अभिमानरहित होकर कहते हैं —
+hi: वानर का बड़े से बड़ा पुरुषार्थ बस इतना है कि वह एक डाल से
+hi: दूसरी डाल पर कूद जाए। समुद्र लाँघकर सोने की लंका जलाना,
+hi: राक्षसों को मारकर अशोक वाटिका उजाड़ना — हे रघुनाथजी! यह सब
+hi: आपका ही प्रताप है; हे नाथ! इसमें मेरी अपनी कोई बड़ाई नहीं है।
+en: Hearing Ram's praise, Hanuman replies free of all pride: the
+en: utmost prowess of a monkey is merely to leap from branch to
+en: branch. That I crossed the ocean, burned the golden city, slew
+en: the demon hosts and laid waste the grove — all that, O Lord of
+en: the Raghus, was your glory alone; nothing of it, my Lord, was
+en: any greatness of mine.

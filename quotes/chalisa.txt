@@ -1,0 +1,135 @@
+# quotes/chalisa.txt — हनुमान चालीसा — तुलसीदास (offline, UTF-8)
+# Triple-recalled and refereed for textual accuracy.
+@title हनुमान चालीसा
+@icon 🚩
+@ramp 196 202 208 214 220 214 208 202
+@art █▀▀ █░█ ▄▀█ █░░ █ █▀ ▄▀█
+@art █▄▄ █▀█ █▀█ █▄▄ █ ▄█ █▀█
+
+[1]
+t: दोहा १
+v: श्रीगुरु चरन सरोज रज निज मनु मुकुरु सुधारि।
+v: बरनउँ रघुबर बिमल जसु जो दायकु फल चारि॥
+hi: श्रीगुरु के चरण-कमलों की धूल से अपने मन रूपी दर्पण को निर्मल
+hi: करके, मैं श्रीरघुवर के उस पवित्र यश का वर्णन करता हूँ, जो
+hi: धर्म, अर्थ, काम और मोक्ष — चारों फल प्रदान करने वाला है।
+en: Having polished the mirror of my heart with the dust of my
+en: Guru's lotus feet, I sing the pure glory of Rama, chief of the
+en: Raghu line, which grants the four fruits of life —
+en: righteousness, prosperity, desire, and liberation.
+
+[2]
+t: चौपाई १
+v: जय हनुमान ज्ञान गुन सागर।
+v: जय कपीस तिहुँ लोक उजागर॥
+hi: हे हनुमान! आप ज्ञान और गुणों के सागर हैं, आपकी जय हो। हे
+hi: वानरों के स्वामी! आप तीनों लोकों को उजागर (प्रकाशित) करने वाले
+hi: हैं, आपकी जय हो।
+en: Hail Hanuman, ocean of wisdom and virtue! Hail, lord of the
+en: monkeys, whose glory shines through all three worlds!
+
+[3]
+t: चौपाई २
+v: राम दूत अतुलित बल धामा।
+v: अंजनि-पुत्र पवनसुत नामा॥
+hi: आप श्रीराम के दूत हैं और अपार बल के भंडार हैं। आप माता अंजनी
+hi: के पुत्र हैं और पवन देवता के पुत्र होने के कारण 'पवनसुत' नाम
+hi: से प्रसिद्ध हैं।
+en: You are the envoy of Rama and a treasury of immeasurable
+en: strength; son of Anjani, you are renowned as Pavansut, child of
+en: the Wind god.
+
+[4]
+t: चौपाई ३
+v: महाबीर बिक्रम बजरंगी।
+v: कुमति निवार सुमति के संगी॥
+hi: हे महावीर हनुमान! आप महान पराक्रमी हैं और आपके अंग वज्र के
+hi: समान कठोर हैं। आप बुरी बुद्धि को दूर करते हैं और अच्छी बुद्धि
+hi: वालों के साथी हैं।
+en: O great hero, mighty in valor, your limbs hard as the
+en: thunderbolt — you drive away wicked thoughts and are the
+en: companion of those of good sense.
+
+[5]
+t: चौपाई ७
+v: बिद्यावान गुनी अति चातुर।
+v: राम काज करिबे को आतुर॥
+hi: हे हनुमान! आप विद्या से संपन्न, गुणी और अत्यंत चतुर हैं।
+hi: श्रीराम का कार्य पूरा करने के लिए आप सदा तत्पर और आतुर रहते
+hi: हैं।
+en: O Hanuman, you are a master of learning, rich in virtues, and
+en: exceedingly wise; you are ever eager and restless to accomplish
+en: the work of Lord Rama.
+
+[6]
+t: चौपाई ११
+v: लाय सजीवन लखन जियाये।
+v: श्रीरघुबीर हरषि उर लाये॥
+hi: आपने संजीवनी बूटी लाकर लक्ष्मण जी को जीवित कर दिया। इससे
+hi: प्रसन्न होकर श्रीरघुवीर (राम) ने आपको हर्षपूर्वक अपने हृदय से
+hi: लगा लिया।
+en: Fetching the life-restoring sanjivani herb, you brought
+en: Lakshmana back to life; and Rama, chief of the Raghus,
+en: overjoyed, embraced you to his heart.
+
+[7]
+t: चौपाई २४
+v: भूत पिसाच निकट नहिं आवै।
+v: महाबीर जब नाम सुनावै॥
+hi: जहाँ महावीर हनुमान का नाम सुनाया जाता है, वहाँ भूत-पिशाच जैसी
+hi: बुरी शक्तियाँ पास भी नहीं फटकतीं। आपके नाम का उच्चारण ही सब
+hi: अनिष्टों को दूर भगा देता है।
+en: Ghosts and evil spirits dare not draw near where the name of
+en: Mahavir Hanuman is uttered; the very sound of the great hero's
+en: name drives all dark forces away.
+
+[8]
+t: चौपाई २६
+v: संकट तें हनुमान छुड़ावै।
+v: मन क्रम बचन ध्यान जो लावै॥
+hi: जो व्यक्ति मन, कर्म और वाणी — तीनों से हनुमान जी का ध्यान करता
+hi: है, हनुमान जी उसे हर संकट से मुक्त कर देते हैं।
+en: Whoever fixes his attention on Hanuman in thought, deed, and
+en: word, him Hanuman delivers from every peril.
+
+[9]
+t: चौपाई ३१
+v: अष्ट सिद्धि नौ निधि के दाता।
+v: अस बर दीन जानकी माता॥
+hi: माता जानकी (सीता जी) ने आपको ऐसा वरदान दिया है कि आप आठों
+hi: सिद्धियाँ और नौ निधियाँ देने में समर्थ हैं। अर्थात् हनुमान जी
+hi: अपने भक्तों को सभी सिद्धियाँ और संपदाएँ प्रदान कर सकते हैं।
+en: Mother Janaki (Sita) bestowed upon you the boon that you may
+en: grant the eight yogic attainments and the nine divine treasures
+en: to your devotees.
+
+[10]
+t: चौपाई ३५
+v: और देवता चित्त न धरई।
+v: हनुमत सेइ सर्ब सुख करई॥
+hi: जो भक्त हनुमान जी की सेवा करता है, उसे किसी अन्य देवता को
+hi: चित्त में धारण करने की आवश्यकता नहीं रहती। हनुमान जी की सेवा
+hi: से ही उसे सारे सुख प्राप्त हो जाते हैं।
+en: He who serves Hanuman need enshrine no other deity in his heart,
+en: for the service of Hanuman alone bestows every happiness.
+
+[11]
+t: चौपाई ३७
+v: जय जय जय हनुमान गोसाईं।
+v: कृपा करहु गुरुदेव की नाईं॥
+hi: हे स्वामी हनुमान! आपकी जय हो, जय हो, जय हो! जैसे गुरु अपने
+hi: शिष्य पर कृपा करते हैं, वैसे ही आप मुझ पर कृपा कीजिए।
+en: Victory, victory, victory to you, O Lord Hanuman! Bestow your
+en: grace upon me as a Guru does upon his disciple.
+
+[12]
+t: समापन दोहा
+v: पवन तनय संकट हरन मंगल मूरति रूप।
+v: राम लखन सीता सहित हृदय बसहु सुर भूप॥
+hi: हे पवनपुत्र! आप संकटों को दूर करने वाले और मंगल के साक्षात्
+hi: स्वरूप हैं। हे देवताओं के स्वामी! श्रीराम, लक्ष्मण और सीता
+hi: सहित आप मेरे हृदय में सदा निवास कीजिए।
+en: O Son of the Wind, dispeller of distress and very image of
+en: auspiciousness — O king among the gods, abide in my heart
+en: together with Rama, Lakshmana, and Sita.
+
