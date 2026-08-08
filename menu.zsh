@@ -1,4 +1,5 @@
-# ~/.prompt/menu.zsh — `theme`: a full-screen theme picker in the hop family.
+# ~/.prompt/menu.zsh — the full-screen theme picker panel, opened by a bare
+# `theme` (the command itself is defined in init.zsh).
 # Browse every theme with ↑↓/jk — the panel re-chromes itself and the preview
 # re-renders in the highlighted theme's colors: its two-line prompt sample
 # (path, git branch, dirty dot, arrows) and its file colors (folder, file,
@@ -126,11 +127,3 @@ _thm_menu() {
     fi
     return 0
 }
-
-theme() {
-    case ${1:-menu} in
-        menu|'') _thm_menu ;;
-        *)       prompt-theme "$@" ;;   # theme matrix, theme gallery, theme glow …
-    esac
-}
-compdef '_arguments "1:theme:(menu gallery random glow ${(k)_prompt_themes})"' theme 2>/dev/null

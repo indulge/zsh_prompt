@@ -2,10 +2,10 @@
 # No frameworks, no plugins. Just zsh builtins + small theme scripts.
 #
 #   Theme panel:    theme               — browse w/ preview, toggle effects
-#   Switch theme:   prompt-theme <name>
-#   List / preview: prompt-theme        (or: prompt-theme gallery)
-#   Surprise me:    prompt-theme random
-#   Glow mode:      prompt-theme glow [on|off]
+#   Switch theme:   theme <name>
+#   List / preview: theme list          (or: theme gallery)
+#   Surprise me:    theme random
+#   Glow mode:      theme glow [on|off]
 #
 # Themes live in $PROMPT_HOME/themes/*.zsh and self-register.
 
@@ -308,7 +308,7 @@ _prompt_expand_paths() {
 _prompt_use() {
     local name=$1
     if [[ -z ${_prompt_themes[$name]} ]]; then
-        print -u2 "prompt-theme: unknown theme '$name'"; _prompt_list; return 1
+        print -u2 "theme: unknown theme '$name'"; _prompt_list; return 1
     fi
     _prompt_apply_$name
     _prompt_expand_paths
@@ -326,11 +326,11 @@ _prompt_list() {
         print -P "  ${mark} %F{213}$(printf '%-11s' $name)%f ${_prompt_themes[$name]}"
     done
     local glow=''; (( _prompt_glow )) && glow='  %F{220}✨ glow on%f'
-    print -P "\n  %F{242}prompt-theme <name> | gallery | random | glow%f${glow}"
+    print -P "\n  %F{242}theme <name> | list | gallery | random | glow — no args opens the panel%f${glow}"
 }
 
 _prompt_gallery() {
-    print -P "\n%B%F{045}✦ prompt.sh theme gallery ✦%f%b\n"
+    print -P "\n%B%F{045}✦ playful-zsh theme gallery ✦%f%b\n"
     local name
     for name in ${(ok)_prompt_themes}; do
         print -P "%F{242}── %f%B%F{213}${name}%f%b %F{242}${_prompt_themes[$name]}%f"
@@ -340,9 +340,13 @@ _prompt_gallery() {
     done
 }
 
-prompt-theme() {
-    case ${1:-list} in
-        list|'')  _prompt_list ;;
+# The one command. Bare `theme` opens the picker panel (menu.zsh); everything
+# else — list, gallery, random, glow, a theme name — is a subcommand.
+theme() {
+    case ${1:-menu} in
+        menu|'')
+            if typeset -f _thm_menu >/dev/null; then _thm_menu; else _prompt_list; fi ;;
+        list)     _prompt_list ;;
         gallery)  _prompt_gallery ;;
         random)   local -a k=(${(k)_prompt_themes}); _prompt_use ${k[$((RANDOM % $#k + 1))]} ;;
         glow)
@@ -359,7 +363,7 @@ prompt-theme() {
         *)        _prompt_use "$1" ;;
     esac
 }
-compdef '_arguments "1:theme:(list gallery random glow ${(k)_prompt_themes})"' prompt-theme 2>/dev/null
+compdef '_arguments "1:theme:(list gallery random glow ${(k)_prompt_themes})"' theme 2>/dev/null
 
 # ── activate saved theme (or default) ───────────────────────────────────────
 [[ -f "$PROMPT_HOME/current" ]] && _prompt_current=$(<"$PROMPT_HOME/current")

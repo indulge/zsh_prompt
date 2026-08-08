@@ -1,4 +1,4 @@
-# prompt.sh 🌈
+# playful-zsh 🌈
 
 Tiny, playful, **dependency-free** zsh prompt themes. No Oh-My-Zsh, no Powerlevel,
 no plugins, no Nerd Fonts — just small zsh scripts you can read in a minute.
@@ -12,13 +12,13 @@ in Devanagari with Hindi and English meanings.
 One command, anywhere:
 
 ```sh
-git clone https://github.com/indulge/zsh-prompt.git ~/.prompt && ~/.prompt/install.sh
+git clone https://github.com/indulge/playful-zsh.git ~/.prompt && ~/.prompt/install.sh
 ```
 
 Or install into any path and start on a chosen theme:
 
 ```sh
-git clone https://github.com/indulge/zsh-prompt.git ~/dotfiles/prompt && ~/dotfiles/prompt/install.sh peacock
+git clone https://github.com/indulge/playful-zsh.git ~/dotfiles/prompt && ~/dotfiles/prompt/install.sh peacock
 ```
 
 The installer adds one managed block to your `~/.zshrc` (idempotent — safe to
@@ -26,18 +26,22 @@ re-run). Restart the shell, or `source ~/.zshrc`.
 
 ## Use
 
+One command: `theme`.
+
 ```sh
-prompt-theme            # list themes, mark the current one
-prompt-theme gallery    # preview every theme in color
-prompt-theme peacock    # switch now, remembered next time
 theme                   # 🎨 panel: browse themes w/ full preview + effects
-prompt-theme random     # surprise me
-prompt-theme glow       # ✨ toggle glow: bold prompt & file colors
+theme peacock           # switch now, remembered next time
+theme list              # list themes, mark the current one
+theme gallery           # preview every theme in color
+theme random            # surprise me
+theme glow [on|off]     # ✨ glow: bold prompt & file colors
 ```
 
-### `theme` — the picker panel
+Tab-completion knows every subcommand and theme name.
 
-`theme` opens a full-screen panel in the hop family. As you browse with
+### The picker panel
+
+Bare `theme` opens a full-screen picker panel. As you browse with
 `↑↓`/`jk` (or `1-9`), the whole panel re-chromes itself in the highlighted
 theme's colors and the preview re-renders **every themed element**: the
 two-line prompt sample (path, git branch, dirty `●`, arrows) and the file
@@ -65,9 +69,6 @@ Effects toggle live from the panel and stick either way:
 - `p` — full paths: `%~` → `%d` in prompts (persisted to `fullpaths`,
   which overrides the `PROMPT_FULL_PATHS` env default)
 
-Anything else falls through to `prompt-theme`: `theme matrix`,
-`theme gallery`, `theme random` all work.
-
 Your choice is saved to `current` (and glow to `glow`) in the install
 directory.
 
@@ -75,12 +76,6 @@ Themes color more than the prompt: each one ships a matching `LS_COLORS`
 palette, so **folder names, symlinks, executables, broken links, archives and
 media** in `ls`, `tree`, `fd` and tab-completion listings switch with the
 theme too.
-
-## hop 🐇
-
-The hop terminal hub — a tmux-backed workspace where a themed sidebar lists
-your sessions and the right pane is the live terminal — is being developed
-on the [`hop` branch](../../tree/hop). It will land here when it stabilizes.
 
 ## श्लोक — verses, offline, any time
 
