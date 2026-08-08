@@ -7,6 +7,8 @@
 #   errors 203 coral        arrows ❯❯❯ shimmer along the feather as you work
 
 _prompt_themes[peacock]='🦚 royal blue, emerald & gold'
+# file colors: emerald dirs, feather-blue links, gold executables, coral broken
+_pr_ls_register peacock 43 44 220 135 203 178 38
 _prompt_samples[peacock]=$'%F{30}╭─%f 🦚 %B%F{43}~/vrindavan%f%b %F{30}on %F{220}main%f %F{208}●%f %F{220}⇡1%f\n%F{30}╰─%f%F{27}❯%F{38}❯%F{48}❯%f'
 
 # The three arrows step one hue along the feather every command — the prompt

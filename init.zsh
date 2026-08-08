@@ -4,6 +4,7 @@
 #   Switch theme:   prompt-theme <name>
 #   List / preview: prompt-theme        (or: prompt-theme gallery)
 #   Surprise me:    prompt-theme random
+#   Glow mode:      prompt-theme glow [on|off]
 #
 # Themes live in $PROMPT_HOME/themes/*.zsh and self-register.
 
@@ -185,6 +186,60 @@ _prompt_farewell() {
 }
 add-zsh-hook zshexit _prompt_farewell
 
+# ── per-theme file colors (ls / tree / fd / completion listings) ────────────
+# Folder names, symlinks & friends follow the theme. Each theme registers:
+#   _pr_ls_register <name> <dir> <link> <exec> <special> <broken> <archive> <media>
+# (256-color numbers). On switch the palette becomes LS_COLORS plus zsh
+# completion list-colors, so `ls`, `tree`, `fd` and tab-completion all match.
+typeset -gA _prompt_lscolors
+typeset -gi _prompt_glow=0
+[[ -f "$PROMPT_HOME/glow" ]] && _prompt_glow=$(<"$PROMPT_HOME/glow")
+
+_pr_ls_register() {
+    local n=$1 di=$2 ln=$3 ex=$4 sp=$5 br=$6 ar=$7 me=$8 e
+    local L="rs=0:di=1;38;5;${di}:ln=38;5;${ln}:ex=38;5;${ex}"
+    L+=":or=9;38;5;${br}:mi=9;38;5;${br}"                            # dangling links: struck out
+    L+=":pi=38;5;${sp}:so=38;5;${sp}:bd=38;5;${sp}:cd=38;5;${sp}"    # pipes, sockets, devices
+    L+=":su=1;4;38;5;${br}:sg=1;4;38;5;${br}:ca=1;4;38;5;${br}"      # setuid/setgid/capability: loud
+    L+=":tw=1;4;38;5;${di}:ow=4;38;5;${di}:st=1;38;5;${di}"          # world-writable dirs: underline, not day-glo bg
+    for e in tar tgz zip gz bz2 xz zst 7z rar deb rpm jar iso; do L+=":*.${e}=38;5;${ar}"; done
+    for e in jpg jpeg png gif webp svg ico mp4 mkv webm mov mp3 flac ogg wav; do L+=":*.${e}=38;5;${me}"; done
+    _prompt_lscolors[$n]=$L
+}
+
+_prompt_apply_lscolors() {
+    local ls=${_prompt_lscolors[$1]} pair v out=''
+    [[ -n $ls ]] || return 0
+    if (( _prompt_glow )); then                      # glow: embolden every entry
+        for pair in ${(s.:.)ls}; do
+            v=${pair#*=}
+            [[ $pair == rs=* || $v == '1;'* ]] || v="1;${v}"
+            out+="${pair%%=*}=${v}:"
+        done
+        ls=${out%:}
+    fi
+    export LS_COLORS=$ls
+    zstyle ':completion:*' list-colors ${(s.:.)ls}
+}
+
+# glow: strip the theme's own bold toggles, then embolden the whole prompt.
+# Runtime segments (git, timer…) only reset color (%f), never bold — so they
+# stay lit too.
+_prompt_glowify() {
+    (( _prompt_glow )) || return 0
+    PROMPT="%B${${PROMPT//\%B/}//\%b/}%b"
+    RPROMPT="%B${${RPROMPT//\%B/}//\%b/}%b"
+}
+
+_pr_ls_swatch() {   # one-line file-color preview, used by the gallery
+    local ls=${_prompt_lscolors[$1]}
+    [[ -n $ls ]] || return 0
+    local -a P=(${(s.:.)ls})
+    local di=${${(M)P:#di=*}#di=} ln=${${(M)P:#ln=*}#ln=} ex=${${(M)P:#ex=*}#ex=}
+    local or=${${(M)P:#or=*}#or=} ar=${${(M)P:#\*.tar=*}#\*.tar=} me=${${(M)P:#\*.png=*}#\*.png=}
+    print -- "  \e[${di}mfolder/\e[0m  \e[${ln}mlink@\e[0m  \e[${ex}mbin*\e[0m  \e[${ar}mpack.tar\e[0m  \e[${me}mimg.png\e[0m  \e[${or}mgone@\e[0m"
+}
+
 # ── load all themes ─────────────────────────────────────────────────────────
 () {
     local f
@@ -194,6 +249,10 @@ add-zsh-hook zshexit _prompt_farewell
 # We render venv/conda ourselves (_pr_venvstr) — stop activate scripts from
 # prepending their own "(venv)" to the prompt.
 export VIRTUAL_ENV_DISABLE_PROMPT=1
+
+# ── session registry + hop, the terminal switcher panel ─────────────────────
+[[ -r "$PROMPT_HOME/sessions.zsh" ]] && source "$PROMPT_HOME/sessions.zsh"
+[[ -r "$PROMPT_HOME/hop.zsh"      ]] && source "$PROMPT_HOME/hop.zsh"
 
 # ── colorful ASCII-art startup banner ───────────────────────────────────────
 [[ -r "$PROMPT_HOME/banner.zsh" ]] && source "$PROMPT_HOME/banner.zsh"
@@ -208,12 +267,23 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 (( PROMPT_SHLOK )) && [[ -t 1 ]] && typeset -f shlok >/dev/null && shlok 2>/dev/null
 
 # ── theme switching ─────────────────────────────────────────────────────────
+# Apply full path expansion if PROMPT_FULL_PATHS is set
+_prompt_expand_paths() {
+    if (( PROMPT_FULL_PATHS )); then
+        PROMPT=$(printf '%s\n' "$PROMPT" | sed 's/%~/%d/g')
+        RPROMPT=$(printf '%s\n' "$RPROMPT" | sed 's/%~/%d/g')
+    fi
+}
+
 _prompt_use() {
     local name=$1
     if [[ -z ${_prompt_themes[$name]} ]]; then
         print -u2 "prompt-theme: unknown theme '$name'"; _prompt_list; return 1
     fi
     _prompt_apply_$name
+    _prompt_expand_paths
+    _prompt_glowify
+    _prompt_apply_lscolors $name
     _prompt_current=$name
     print -r -- "$name" > "$PROMPT_HOME/current" 2>/dev/null
 }
@@ -225,7 +295,8 @@ _prompt_list() {
         local mark=' '; [[ $name == $_prompt_current ]] && mark='%F{046}✓%f'
         print -P "  ${mark} %F{213}$(printf '%-11s' $name)%f ${_prompt_themes[$name]}"
     done
-    print -P "\n  %F{242}prompt-theme <name> | gallery | random%f"
+    local glow=''; (( _prompt_glow )) && glow='  %F{220}✨ glow on%f'
+    print -P "\n  %F{242}prompt-theme <name> | gallery | random | glow%f${glow}"
 }
 
 _prompt_gallery() {
@@ -233,7 +304,9 @@ _prompt_gallery() {
     local name
     for name in ${(ok)_prompt_themes}; do
         print -P "%F{242}── %f%B%F{213}${name}%f%b %F{242}${_prompt_themes[$name]}%f"
-        print -P "${_prompt_samples[$name]}\n"
+        print -P "${_prompt_samples[$name]}"
+        _pr_ls_swatch $name
+        print
     done
 }
 
@@ -242,12 +315,26 @@ prompt-theme() {
         list|'')  _prompt_list ;;
         gallery)  _prompt_gallery ;;
         random)   local -a k=(${(k)_prompt_themes}); _prompt_use ${k[$((RANDOM % $#k + 1))]} ;;
+        glow)
+            case ${2:-toggle} in
+                on)  _prompt_glow=1 ;;
+                off) _prompt_glow=0 ;;
+                *)   (( _prompt_glow ^= 1 )) || : ;;
+            esac
+            print -r -- $_prompt_glow > "$PROMPT_HOME/glow" 2>/dev/null
+            _prompt_use "$_prompt_current"
+            if (( _prompt_glow )); then print -P "%F{220}✨ glow on%f — bold prompt & file colors"
+            else print -P "%F{242}glow off%f"; fi
+            ;;
         *)        _prompt_use "$1" ;;
     esac
 }
-compdef '_arguments "1:theme:(list gallery random ${(k)_prompt_themes})"' prompt-theme 2>/dev/null
+compdef '_arguments "1:theme:(list gallery random glow ${(k)_prompt_themes})"' prompt-theme 2>/dev/null
 
 # ── activate saved theme (or default) ───────────────────────────────────────
 [[ -f "$PROMPT_HOME/current" ]] && _prompt_current=$(<"$PROMPT_HOME/current")
 [[ -n ${_prompt_themes[$_prompt_current]} ]] || _prompt_current=candy
 _prompt_apply_$_prompt_current
+_prompt_expand_paths
+_prompt_glowify
+_prompt_apply_lscolors $_prompt_current

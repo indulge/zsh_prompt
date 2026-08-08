@@ -1,5 +1,7 @@
 # ocean — deep blues, teal & aqua
 _prompt_themes[ocean]='🌊 deep blues, teal & aqua'
+# file colors: azure dirs, aqua links, foam executables, deep-sea archives
+_pr_ls_register ocean 39 45 87 123 209 31 75
 _prompt_samples[ocean]=$'🌊 %F{39}~/reef%f%F{45} on %F{87}main%f %F{209}●%f\n%F{45}➜%f'
 _prompt_apply_ocean() {
     PROMPT='🌊 %F{39}%~%f$(_pr_gitstr 45 87 209)%(1j. %F{123}✦%j%f.)
