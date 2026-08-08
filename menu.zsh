@@ -86,29 +86,20 @@ _thm_menu() {
     local -i n=${#_thm_names} sel=1 off=0 applied=0 efx=0
     local -i cur=${_thm_names[(Ie)$_prompt_current]}
     (( cur )) && sel=cur
-    local k k2 k3 _thm_msg=''
+    local _thm_msg='' junk
     print -rn -- $'\e[?1049h\e[?25l\e[2J'
     {
         while :; do
             (( sel <= off ))    && off=$(( sel - 1 ))
             (( sel > off + 8 )) && off=$(( sel - 8 ))
             _thm_draw
-            read -sk1 k 2>/dev/null || break
+            _pr_readkey 300 || continue
             _thm_msg=''
-            case $k in
-                $'\e')
-                    if read -sk1 -t 0.05 k2 2>/dev/null && [[ $k2 == '[' ]]; then
-                        read -sk1 -t 0.2 k3 2>/dev/null
-                        case $k3 in
-                            A) (( sel > 1 )) && (( sel-- )) ;;
-                            B) (( sel < n )) && (( sel++ )) ;;
-                        esac
-                    else
-                        break
-                    fi ;;
-                k) (( sel > 1 )) && (( sel-- )) ;;
-                j) (( sel < n )) && (( sel++ )) ;;
-                [1-9]) local -i jmp=$k; (( jmp <= n )) && sel=jmp ;;
+            case $REPLY in
+                esc) break ;;
+                k|up)   (( sel > 1 )) && (( sel-- )) ;;
+                j|down) (( sel < n )) && (( sel++ )) ;;
+                [1-9]) local -i jmp=$REPLY; (( jmp <= n )) && sel=jmp ;;
                 g|G)
                     (( _prompt_glow ^= 1 )) || :
                     print -r -- $_prompt_glow > "$PROMPT_HOME/glow" 2>/dev/null

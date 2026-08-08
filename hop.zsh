@@ -1,378 +1,405 @@
-# ~/.prompt/hop.zsh — hop 🐇: an in-terminal panel listing every live zsh
-# session — scroll with live preview, rename for your own reference, press
-# Enter to jump. Pure zsh + ANSI escapes, no dependencies; colors come from
-# the active prompt theme. `hop help` for usage; README for the per-platform
-# story (tmux → true switch, window focus where the OS allows it, and a cwd
-# "teleport" everywhere else).
+# ~/.prompt/hop.zsh — hop 🐇 v2: your terminals, multiplexed.
+#
+# One tmux-backed hub (its own socket, own server — never touches your other
+# tmux). Every session is a named window: the left sidebar lists them, the
+# right pane IS the session — claude, vim, top, anything, at full fidelity,
+# because tmux is the terminal emulator. Sessions survive closing the
+# terminal window; `hop` from anywhere puts you right back among them.
+#
+#   hop              outside the hub: attach (creating it if needed)
+#                    inside the hub:  jump to the sidebar
+#   hop name <n>     rename the current session
+#   hop list         list hub sessions from anywhere
+#   hop help         cheat sheet
+#
+# Sidebar keys: ↑↓/jk browse (right pane follows live) · 1-9 jump · ⏎ into
+# the session · r rename · n new · x kill · t themes mode · d detach ·
+# q hide sidebar. Themes mode: browse = the whole hub re-themes live;
+# ⏎ keeps it, Esc restores theme+glow, g toggles glow.
+# Jump panes from anywhere — even while claude/vim/top run (tmux eats the
+# keys first): Alt+h → sidebar · Alt+l → session. Typing `hop` at a shell
+# prompt also lands on the sidebar.
+# Sidebar width: HOP_WIDTH (default 20%); resizing the terminal keeps the
+# ratio — tmux scales panes proportionally.
+#
+# Needs tmux (the one dependency): apt/dnf/pacman/brew install tmux.
+# Works on Linux + macOS, x86 and ARM alike — tmux is plain C, everywhere.
 
 [[ -o interactive ]] || return
 
+: ${HOP_SOCKET:=hop}
+: ${HOP_WIDTH:=20%}          # sidebar width — % of the window or a column count
+# sessions.zsh normally defines this, but sidebar shells skip it (HOP_SB)
 : ${_PR_SESS_DIR:="$PROMPT_HOME/sessions"}
-typeset -g  _hop_result='' _hop_msg=''
-typeset -ga _hop_pids
-typeset -gA _hop_d
 
-# ── glyphs: box-drawing when the locale can show it, pure ASCII otherwise ────
-# (force ASCII with HOP_ASCII=1)
+# ── glyphs: box-drawing when the locale can show it, ASCII otherwise ────────
 if (( ${HOP_ASCII:-0} )) || [[ ${(U)LANG}${(U)LC_ALL} != *UTF*8* ]]; then
-    typeset -g  _hop_utf=0
-    typeset -g _hop_tl='+' _hop_tr='+' _hop_bl='+' _hop_br='+' _hop_hh='=' \
-               _hop_v='|' _hop_ml='+' _hop_mr='+' _hop_h2='-' _hop_ptr='>' \
-               _hop_dot='*' _hop_idot='.' _hop_nox='x'
+    typeset -g _hop_utf=0 _hop_h2='-' _hop_ptr='>' _hop_dot='*' _hop_idot='.' _hop_chk='*'
 else
-    typeset -g  _hop_utf=1
-    typeset -g _hop_tl='╔' _hop_tr='╗' _hop_bl='╚' _hop_br='╝' _hop_hh='═' \
-               _hop_v='║' _hop_ml='╟' _hop_mr='╢' _hop_h2='─' _hop_ptr='▸' \
-               _hop_dot='●' _hop_idot='·' _hop_nox='⤫'
+    typeset -g _hop_utf=1 _hop_h2='─' _hop_ptr='▸' _hop_dot='●' _hop_idot='·' _hop_chk='✓'
 fi
 
-# ── palette lifted from the active theme's file colors ──────────────────────
-_hop_colors() {
-    local -a P=(${(s.:.)_prompt_lscolors[$_prompt_current]})
-    typeset -g _hop_cF=${${(M)P:#ln=*}#ln=}  _hop_cS=${${(M)P:#di=*}#di=}
-    typeset -g _hop_cH=${${(M)P:#ex=*}#ex=}  _hop_cB=${${(M)P:#or=*}#or=}
-    : ${_hop_cF:='38;5;244'} ${_hop_cS:='1;38;5;39'}
-    : ${_hop_cH:='38;5;114'} ${_hop_cB:='38;5;203'}
-    typeset -g _hop_cD='38;5;242'
-}
-
-# ── registry I/O ────────────────────────────────────────────────────────────
-_hop_load() {   # fill _hop_pids (self first, then newest activity), _hop_d
-    _hop_pids=(); _hop_d=()
-    local f pid line
-    local -a byage=()
-    for f in "$_PR_SESS_DIR"/*.rename(N); do   # orphaned rename handoffs
-        pid=${${f:t}%.rename}
-        kill -0 $pid 2>/dev/null || command rm -f "$f"
-    done
-    for f in "$_PR_SESS_DIR"/*.session(N); do
-        pid=${${f:t}%.session}
-        [[ $pid == <-> ]] || continue
-        if ! kill -0 $pid 2>/dev/null; then command rm -f "$f"; continue; fi
-        while IFS= read -r line; do
-            [[ $line == *=* ]] && _hop_d[$pid,${line%%=*}]=${line#*=}
-        done < "$f"
-        byage+=("${(l:12::0:)_hop_d[$pid,at]} $pid")
-    done
-    byage=(${(O)byage})
-    _hop_pids=(${byage#* })
-    (( ${_hop_pids[(Ie)$$]} )) && _hop_pids=($$ ${_hop_pids:#$$})
-    # how (whether) we can actually switch to each one from THIS shell —
-    # decided up front so the list and preview can be honest about it
-    local reach
-    for pid in $_hop_pids; do
-        reach=none
-        if [[ -n ${_hop_d[$pid,tmux]} && -n $TMUX ]] && (( $+commands[tmux] )) && \
-           command tmux display-message -pt "${_hop_d[$pid,tmux]}" '#{session_name}' >/dev/null 2>&1; then
-            reach=tmux
-        elif [[ -n ${_hop_d[$pid,name]} ]]; then
-            if [[ $OSTYPE == darwin* ]]; then
-                reach=mac
-            elif [[ -n ${WSL_DISTRO_NAME:-}${WSL_INTEROP:-} ]] && (( $+commands[powershell.exe] )); then
-                reach=wsl          # window-level focus, best effort
-            elif [[ -n $DISPLAY ]] && (( $+commands[wmctrl] || $+commands[xdotool] )); then
-                reach=x11
-            fi
-        fi
-        _hop_d[$pid,reach]=$reach
-    done
-}
-
-_hop_setname() {   # <pid> <name> — registry now; the live shell adopts it
-    local pid=$1 nm=$2 f="$_PR_SESS_DIR/$1.session" line out=''
-    if [[ $pid == $$ ]]; then
-        TERM_SESSION_NAME=$nm
-        _pr_sess_title
-        _pr_sess_write
-        return 0
-    fi
-    [[ -f $f ]] || return 1
-    while IFS= read -r line; do
-        [[ $line == name=* ]] && line="name=$nm"
-        out+=$line$'\n'
-    done < "$f"
-    print -rn -- "$out" > "$f"
-    # the target applies name + tab title at its next prompt
-    print -r -- "$nm" > "$_PR_SESS_DIR/$pid.rename"
-}
-
-_hop_clean() {   # names travel into titles, AppleScript & PowerShell — tame them
+_hop_clean() {   # names travel into titles & tmux commands — keep them tame
     local nm=${1//[[:cntrl:]]/}
     nm=${nm//[\"\'\\\`;]/}
-    print -rn -- "${nm[1,24]}"
+    print -rn -- "${nm[1,20]}"
 }
 
-_hop_ago() {
-    local -i d=$(( EPOCHSECONDS - ${1:-EPOCHSECONDS} ))
-    (( d < 0 )) && d=0
-    if   (( d < 60 ));   then print -n "${d}s"
-    elif (( d < 3600 )); then print -n "$(( d / 60 ))m"
-    else                      print -n "$(( d / 3600 ))h"; fi
+# ── hub plumbing ────────────────────────────────────────────────────────────
+_hop_tm() { command tmux -L "$HOP_SOCKET" "$@" }
+
+_hop_in_hub() { [[ -n $TMUX && ${${TMUX%%,*}:t} == $HOP_SOCKET ]] }
+
+_hop_hub_config() {
+    _hop_tm set -g status off \; set -g mouse on \; set -g base-index 1 \; \
+            set -g renumber-windows on \; set -g set-titles on \; \
+            set -g set-titles-string '#W · hop' \; set -s escape-time 10 \
+            2>/dev/null
+    _hop_tm move-window -r -t hub: 2>/dev/null   # first window starts at 1
+    # Alt+h from anywhere — even with claude/vim/top running in the right
+    # pane, tmux eats the key before the app sees it: focus the sidebar,
+    # spawning it first if it was hidden (q) or the window never had one.
+    _hop_sb_cmd
+    _hop_tm bind -n M-h if -F '#{e|>:#{window_panes},1}' \
+        "select-pane -t '{left}'" \
+        "split-window -hbf -l $HOP_WIDTH '$REPLY'" 2>/dev/null
+    # …and Alt+l jumps back into the session pane: h ⇄ l, vim-style
+    _hop_tm bind -n M-l select-pane -t '{right}' 2>/dev/null
+    _hop_theme_sync
 }
 
-# ── switch backends, best available first ───────────────────────────────────
-_hop_focus_mac() {   # <title> <term_program> — osascript ships with macOS
-    local t=$1
-    case ${2:-$TERM_PROGRAM} in
-        iTerm*) command osascript >/dev/null 2>&1 -e '
-            tell application "iTerm2"
-                activate
-                repeat with w in windows
-                    repeat with tb in tabs of w
-                        repeat with s in sessions of tb
-                            if name of s contains "'"$t"'" then
-                                select w
-                                select tb
-                                return
-                            end if
-                        end repeat
-                    end repeat
-                end repeat
-            end tell' ;;
-        *) command osascript >/dev/null 2>&1 -e '
-            tell application "Terminal"
-                activate
-                repeat with w in windows
-                    repeat with tb in tabs of w
-                        if custom title of tb contains "'"$t"'" then
-                            set frontmost of w to true
-                            set selected of tb to true
-                            return
-                        end if
-                    end repeat
-                end repeat
-            end tell' ;;
-    esac
+# Restyle the hub to the active theme (split lines in theme colors). Called
+# on hub creation and by _prompt_use on every theme switch, so changing the
+# theme re-skins the whole hub live; the sidebar re-inks itself on its tick.
+_hop_theme_sync() {
+    (( $+commands[tmux] )) || return 0
+    _hop_tm has-session -t hub 2>/dev/null || return 0
+    # last field of the SGR entry = the 256-colour number tmux wants
+    local -a P=(${(s.:.)_prompt_lscolors[$_prompt_current]})
+    local ln=${${${(M)P:#ln=*}#ln=}##*;} di=${${${(M)P:#di=*}#di=}##*;}
+    [[ -n $ln ]] && _hop_tm set -g pane-border-style "fg=colour${ln}" 2>/dev/null
+    [[ -n $di ]] && _hop_tm set -g pane-active-border-style "fg=colour${di}" 2>/dev/null
 }
 
-_hop_focus_wsl() {   # <title> — raise the Windows Terminal *window* whose
-    local out          # front tab carries this title (background tabs can't
-    out=$(command powershell.exe -NoProfile -Command \
-        "(New-Object -ComObject WScript.Shell).AppActivate('$1')" 2>/dev/null)
-    [[ ${out%%$'\r'*} == True ]]
-}
-
-# Enter never guesses: it switches when a backend can actually reach the
-# target, otherwise it explains why and stays in the menu. Teleport (cd to
-# the target's directory — cwd only, none of that terminal's session) is
-# its own explicit key: t.
-_hop_switch() {   # <pid> → 0: done, leave the menu · 1: stay in the menu
-    local pid=$1
-    [[ $pid == $$ ]] && { _hop_msg="you are already here"; return 1 }
-    local name=${_hop_d[$pid,name]} pane=${_hop_d[$pid,tmux]}
-    case ${_hop_d[$pid,reach]} in
-        tmux)
-            local sess
-            sess=$(command tmux display-message -pt "$pane" '#{session_name}' 2>/dev/null)
-            command tmux switch-client -t "$sess" 2>/dev/null
-            command tmux select-window -t "$pane" 2>/dev/null
-            command tmux select-pane   -t "$pane" 2>/dev/null
-            _hop_result="switched to tmux pane $pane (${name:-unnamed})"
-            return 0 ;;
-        mac)
-            if _hop_focus_mac "$name" "${_hop_d[$pid,term]}"; then
-                _hop_result="focused window '$name'"; return 0
-            fi
-            _hop_msg="no window titled '$name' found ${_hop_idot} t teleports"
-            return 1 ;;
-        x11)
-            if (( $+commands[wmctrl] )) && command wmctrl -a "$name" 2>/dev/null; then
-                _hop_result="focused window '$name' (wmctrl)"; return 0
-            elif (( $+commands[xdotool] )) && \
-                 command xdotool search --name "$name" windowactivate 2>/dev/null; then
-                _hop_result="focused window '$name' (xdotool)"; return 0
-            fi
-            _hop_msg="no window titled '$name' found ${_hop_idot} t teleports"
-            return 1 ;;
-        wsl)
-            if _hop_focus_wsl "$name"; then
-                _hop_result="focused Windows Terminal window '$name'"; return 0
-            fi
-            _hop_msg="'$name' isn't a front tab — Ctrl+Tab to it ${_hop_idot} t teleports"
-            return 1 ;;
-        *)
-            if [[ -n $name ]]; then
-                _hop_msg="no switch path — its tab is titled '$name' ${_hop_idot} t teleports"
-            else
-                _hop_msg="no switch path — r names it (shows in tab bar) ${_hop_idot} t teleports"
-            fi
-            return 1 ;;
-    esac
-}
-
-_hop_teleport() {   # <pid> — explicit: bring its cwd here, nothing else
-    local cwd=${_hop_d[$1,cwd]}
-    if [[ -d $cwd ]]; then
-        cd -- "$cwd"
-        _hop_result="teleported to ${(D)cwd} (cwd only — not that terminal's session)"
-        return 0
-    fi
-    _hop_msg="its cwd is gone"
+_hop_sb_pane() {   # <win> — print the window's sidebar pane id, if any
+    local id sb
+    _hop_tm list-panes -t "$1" -F '#{pane_id} #{?@hop_sb,1,0}' 2>/dev/null | \
+    while read -r id sb; do
+        [[ $sb == 1 ]] && { print -rn -- "$id"; return 0 }
+    done
     return 1
 }
 
-# ── the panel ───────────────────────────────────────────────────────────────
-_hop_draw() {   # uses: sel off  ·  sets: nothing (pure redraw)
-    local F=$'\e['"${_hop_cF}m" S=$'\e['"${_hop_cS}m" H=$'\e['"${_hop_cH}m"
-    local B=$'\e['"${_hop_cB}m" D=$'\e['"${_hop_cD}m" R=$'\e[0m' K=$'\e[K'
-    local -i W=$(( COLUMNS - 2 ))
-    (( W > 74 )) && W=74
-    (( W < 60 )) && W=60
-    local -i inner=$(( W - 2 )) n=${#_hop_pids}
-    local -i rest=$(( inner - 51 ))    # same-statement would see inner=0
-    local -i i
-    print -rn -- $'\e[H'
+# the command a sidebar pane runs — no single quotes, so it can survive
+# every quoting layer (zsh → tmux → sh) identically everywhere it's used.
+# Sets $REPLY (no fork) instead of printing.
+_hop_sb_cmd() {
+    REPLY="PROMPT_BANNER=0 PROMPT_SHLOK=0 PROMPT_FAREWELL=0 HOP_SB=1 HOP_SOCKET=$HOP_SOCKET exec zsh -ic hop\\ _sidebar"
+}
 
-    local title=" hop ${_hop_h2} $n shells "
-    (( n == 1 )) && title=" hop ${_hop_h2} 1 shell "
-    local -i fill=$(( W - 3 - ${#title} ))
-    print -r -- "${F}${_hop_tl}${_hop_hh}${title}${(pl:fill::$_hop_hh:):-}${_hop_tr}${R}${K}"
+_hop_sb_ensure() {   # <win> — spawn the sidebar there if missing; print its id
+    local id
+    id=$(_hop_sb_pane "$1") && { print -rn -- "$id"; return 0 }
+    _hop_sb_cmd
+    id=$(_hop_tm split-window -hbf -l "$HOP_WIDTH" -d -t "$1" -P -F '#{pane_id}' "$REPLY")
+    [[ -n $id ]] && _hop_tm set -p -t "$id" @hop_sb 1
+    print -rn -- "$id"
+}
 
-    # list window
-    for (( i = off + 1; i <= n && i <= off + 9; i++ )); do
-        local p=${_hop_pids[i]}
-        local nm=${_hop_d[$p,name]:-zsh $p} cm=${_hop_d[$p,cmd]:-—}
-        local cw=${(D)_hop_d[$p,cwd]}
-        (( ${#cw} > 24 )) && cw="…${cw[-23,-1]}"
-        [[ $p == $$ ]] && cm='(this shell)'
-        local dot="${D}${_hop_idot}${R}" mark='  ' nmC=''
-        [[ ${_hop_d[$p,state]} == run ]] && dot="${H}${_hop_dot}${R}"
-        [[ ${_hop_d[$p,reach]} == none && $p != $$ ]] && mark="${D}${_hop_nox} ${R}"
-        [[ $p == $$ ]] && nmC=$D
-        (( i == sel )) && { mark="${H}${_hop_ptr} ${R}"; nmC=$S; }
-        print -r -- "${F}${_hop_v}${R} ${mark}${D}${(l:2:)i}${R} ${dot} ${nmC}${(r:16:)${nm[1,16]}}${R} ${D}${(r:24:)cw}${R} ${D}${(r:rest:)${cm[1,rest]}}${R} ${F}${_hop_v}${R}${K}"
-    done
+_hop_hub_attach() {
+    (( $+commands[tmux] )) || {
+        print -u2 "hop: needs tmux — sudo apt install tmux (Linux/WSL) or brew install tmux (macOS)"
+        return 1
+    }
+    if ! _hop_tm has-session -t hub 2>/dev/null; then
+        _hop_tm new-session -d -s hub -n shell || return 1
+        _hop_hub_config
+    fi
+    # each terminal gets an independent grouped view; it evaporates on detach,
+    # while the base "hub" session keeps every window alive in the background.
+    # --own-window (used by HOP_AUTO): this tab also gets its OWN fresh hub
+    # session, so every new terminal shows up in every sidebar.
+    if [[ $1 == --own-window ]]; then
+        _hop_sb_cmd
+        _hop_tm new-session -t hub \; set-option destroy-unattached on \; \
+            new-window \; split-window -hbf -l "$HOP_WIDTH" -d "$REPLY" \; \
+            select-pane -t '{right}'
+    else
+        _hop_sb_ensure "hub:" >/dev/null
+        _hop_tm new-session -t hub \; set-option destroy-unattached on
+    fi
+}
 
-    # preview of the selected session
-    print -r -- "${F}${_hop_ml}${(pl:$(( W - 2 ))::$_hop_h2:):-}${_hop_mr}${R}${K}"
-    local p=${_hop_pids[sel]}
-    local nm=${_hop_d[$p,name]:-unnamed} br=${_hop_d[$p,branch]} ex=${_hop_d[$p,exit]:-0}
-    local meta="${nm} ${_hop_idot} tty ${_hop_d[$p,tty]} ${_hop_idot} pid ${p}"
-    [[ -n $br ]] && meta+=" ${_hop_idot} on ${br}"
-    [[ $p == $$ ]] && meta+=" ${_hop_idot} you"
-    local exC=$H; [[ $ex != 0 ]] && exC=$B
-    local last="last: ${_hop_d[$p,cmd]:-—} ${_hop_ptr} ${ex} ${_hop_idot} $(_hop_ago ${_hop_d[$p,at]}) ago"
-    local cwl="cwd:  ${(D)_hop_d[$p,cwd]}"
-    local jmp
-    case ${_hop_d[$p,reach]} in
-        tmux) jmp="jump: real switch — tmux pane ${_hop_d[$p,tmux]}" ;;
-        mac)  jmp="jump: focuses the window titled '${nm}'" ;;
-        x11)  jmp="jump: focuses the window titled '${nm}'" ;;
-        wsl)  jmp="jump: raises the WT window fronting '${nm}' ${_hop_idot} t = cwd here" ;;
-        *)    if [[ $p == $$ ]]; then jmp="jump: you are here"
-              elif [[ -n ${_hop_d[$p,name]} ]]; then
-                  jmp="jump: none from here ${_hop_idot} tab titled '${nm}' ${_hop_idot} t = cwd here"
-              else
-                  jmp="jump: none ${_hop_idot} r names it for the tab bar ${_hop_idot} t = cwd here"
-              fi ;;
+_hop_sb_focus() {   # `hop` typed inside the hub: land on the sidebar
+    local id
+    id=$(_hop_sb_ensure "$(_hop_tm display -p '#{window_id}')")
+    [[ -n $id ]] && _hop_tm select-pane -t "$id"
+}
+
+# ── the sidebar (runs inside its own pane, one per window, shared by views) ─
+_hop_sb_move() {   # next|prev|<index> — ONE tmux round-trip, for a snappy feel
+    local tgt
+    case $1 in
+        next) tgt=':+' ;;
+        prev) tgt=':-' ;;
+        *)    tgt=":$1" ;;
     esac
-    for meta in "$meta" "$cwl" "$last" "$jmp"; do
-        print -r -- "${F}${_hop_v}${R} ${(r:$(( inner - 2 )):)${meta[1,$(( inner - 2 ))]}} ${F}${_hop_v}${R}${K}"
+    # switch window, then land on its sidebar — spawning one on the fly if
+    # that window never had one (or had it hidden). All in a single client
+    # invocation: per-keypress process spawns are what read as input lag.
+    _hop_sb_cmd
+    _hop_tm select-window -t "$tgt" \; \
+        if -F '#{e|>:#{window_panes},1}' \
+        "select-pane -t '{left}'" \
+        "split-window -hbf -l $HOP_WIDTH -d '$REPLY' ; select-pane -t '{left}'" \
+        2>/dev/null
+}
+
+_hop_sb_new() {
+    local w
+    w=$(_hop_tm new-window -P -F '#{window_id}')
+    [[ -n $w ]] || return 1
+    _hop_sb_ensure "$w" >/dev/null     # lands focused on the fresh shell
+}
+
+_hop_sb_rename() {
+    local cur name
+    cur=$(_hop_tm display -p '#{window_name}')
+    print -n "\e[$((LINES));1H\e[K\e[?25h"
+    IFS= read -r "name?name [$cur]: "
+    print -n '\e[?25l'
+    name=$(_hop_clean "$name")
+    [[ -n $name ]] && _hop_tm rename-window -- "$name"
+}
+
+_hop_sb_kill() {
+    print -n "\e[$((LINES));1H\e[K"
+    print -n "kill this session? y/N"
+    local ans; read -sk1 ans
+    print -n "\e[$((LINES));1H\e[K"
+    [[ $ans == [yY] ]] || return 0
+    local cur n
+    cur=$(_hop_tm display -p '#{window_id}')
+    n=$(_hop_tm display -p '#{session_windows}')
+    (( n > 1 )) && _hop_sb_move next     # step onto a survivor first
+    _hop_tm kill-window -t "$cur"        # killing our own window ends us too
+}
+
+_hop_sb_draw() {
+    # re-read the theme each tick — switching themes re-inks the sidebar live
+    local thm=$_prompt_current
+    [[ -r "$PROMPT_HOME/current" ]] && thm=$(<"$PROMPT_HOME/current")
+    local -a P=(${(s.:.)_prompt_lscolors[$thm]})
+    local cS=${${(M)P:#di=*}#di=} cH=${${(M)P:#ex=*}#ex=} cF=${${(M)P:#ln=*}#ln=}
+    : ${cS:='1;38;5;39'} ${cH:='38;5;114'} ${cF:='38;5;244'}
+    local S=$'\e['"${cS}m" H=$'\e['"${cH}m" F=$'\e['"${cF}m" \
+          D=$'\e[38;5;242m' R=$'\e[0m' K=$'\e[K'
+    local icon=${${(z)_prompt_themes[$thm]}[1]}   # the theme's emoji
+    local -i w=$COLUMNS
+    print -n '\e[H'
+    print -r -- "${icon:-} ${F}hop ${(pl:$(( w - 7 ))::$_hop_h2:):-}${R}${K}"
+    # windows + what runs in them, from ONE tmux call (draw runs per keypress;
+    # every extra client spawn is felt as input lag)
+    local -A cmd_of idx_of act_of nam_of
+    local -a order
+    local wid idx act sb cmd name
+    _hop_tm list-panes -s -F '#{window_id} #{window_index} #{window_active} #{?@hop_sb,1,0} #{pane_current_command} #{window_name}' 2>/dev/null | \
+    while read -r wid idx act sb cmd name; do
+        [[ -n ${idx_of[$wid]} ]] || { order+=($wid); idx_of[$wid]=$idx; act_of[$wid]=$act; nam_of[$wid]=$name; }
+        [[ $sb == 1 ]] || cmd_of[$wid]=$cmd
     done
-    # live pane tail — only tmux can show another terminal's screen
-    if [[ -n ${_hop_d[$p,tmux]} ]] && (( $+commands[tmux] )); then
-        local -a live=(${(f)"$(command tmux capture-pane -pt ${_hop_d[$p,tmux]} -S -4 2>/dev/null)"})
-        local ln
-        for ln in ${live[-3,-1]}; do
-            print -r -- "${F}${_hop_v}${R} ${D}│ ${(r:$(( inner - 4 )):)${ln[1,$(( inner - 4 ))]}}${R} ${F}${_hop_v}${R}${K}"
+    local c dot mark nc   # declared once — re-`local` in a loop echoes set vars
+    local -i nw=$(( w - 8 ))          # name column adapts to the rail width
+    (( nw > 14 )) && nw=14
+    (( nw < 6 ))  && nw=6
+    for wid in $order; do
+        c=${cmd_of[$wid]:-zsh} mark='  ' nc=$D dot="${D}${_hop_idot}${R}"
+        [[ $c != (zsh|bash|sh|fish) ]] && dot="${H}${_hop_dot}${R}"
+        [[ ${act_of[$wid]} == 1 ]] && { mark="${H}${_hop_ptr} ${R}"; nc=$S; }
+        name=${nam_of[$wid]}
+        print -r -- "${mark}${D}${idx_of[$wid]}${R} ${dot} ${nc}${(r:nw:)${name[1,nw]}}${R}${K}"
+    done
+    # plain terminals outside the hub (from the session registry). Honesty
+    # note: the hub cannot embed an already-running pty, so these are listed
+    # for awareness, not hosted — HOP_AUTO=1 makes future tabs join for real.
+    local f pid line onm otm
+    local -a out_rows=()
+    for f in "$_PR_SESS_DIR"/*.session(N); do
+        pid=${${f:t}%.session}
+        [[ $pid == <-> ]] && kill -0 $pid 2>/dev/null || { command rm -f "$f" 2>/dev/null; continue }
+        onm='' otm=''
+        while IFS= read -r line; do
+            case $line in
+                name=*) onm=${line#name=} ;;
+                tmux=*) otm=${line#tmux=} ;;
+            esac
+        done < "$f"
+        [[ -n $otm ]] && continue          # already inside a tmux/the hub
+        out_rows+=("${onm:-zsh ${pid}}")
+    done
+    if (( ${#out_rows} )); then
+        print -r -- "${F}${_hop_h2} outside ${(pl:$(( w - 10 ))::$_hop_h2:):-}${R}${K}"
+        local o
+        for o in $out_rows; do
+            print -r -- "  ${D}${_hop_idot} ${o[1,$(( w - 4 ))]}${R}${K}"
         done
     fi
-
-    # footer
-    print -r -- "${F}${_hop_ml}${(pl:$(( W - 2 ))::$_hop_h2:):-}${_hop_mr}${R}${K}"
-    local keys=" ↑↓/jk move ${_hop_idot} ⏎ switch ${_hop_idot} t teleport ${_hop_idot} r rename ${_hop_idot} q quit "
-    (( _hop_utf )) || keys=" up/dn jk move . Enter switch . t teleport . r rename . q quit "
-    [[ -n $_hop_msg ]] && keys=" ${_hop_msg} "
-    print -r -- "${F}${_hop_v}${R}${D}${(r:inner:)${keys[1,inner]}}${R}${F}${_hop_v}${R}${K}"
-    print -r -- "${F}${_hop_bl}${(pl:$(( W - 2 ))::$_hop_hh:):-}${_hop_br}${R}${K}"
+    print -r -- "${K}"
+    print -r -- "${F}${(pl:$w::$_hop_h2:):-}${R}${K}"
+    local ent='⏎' sw='⇄'
+    (( _hop_utf )) || { ent='cr'; sw='='; }
+    print -r -- "${D}${ent} open  r name${R}${K}"
+    print -r -- "${D}n new   x kill${R}${K}"
+    print -r -- "${D}t theme d detach${R}${K}"
+    print -r -- "${D}q hide  alt+h/l${sw}${R}${K}"
+    print -r -- "${D}${_hop_idot} ${thm}${R}${K}"
     print -rn -- $'\e[J'
 }
 
-_hop_rename() {
-    local pid=$1 cur=${_hop_d[$pid,name]} name
-    print -rn -- $'\n\e[K\e[?25h'
-    IFS= read -r "name?  new name${cur:+ [$cur]}: "
-    print -rn -- $'\e[?25l'
-    name=$(_hop_clean "$name")
-    [[ -n $name ]] || return 0
-    _hop_setname $pid "$name" || { _hop_msg="rename failed"; return 1 }
-    _hop_d[$pid,name]=$name
-    _hop_msg="renamed ${_hop_ptr} $name"
+_hop_sb_theme_apply() {   # uses thmsel/_thmlist — apply, persist, restyle hub;
+    _prompt_use "${_thmlist[thmsel]}" 2>/dev/null   # running shells follow at
+}                                                   # their next prompt
+
+_hop_sb_draw_themes() {   # uses: _thmlist thmsel toff thm0 (dynamic scope)
+    local thm=${_thmlist[thmsel]}
+    local -a P=(${(s.:.)_prompt_lscolors[$thm]})
+    local cS=${${(M)P:#di=*}#di=} cH=${${(M)P:#ex=*}#ex=}
+    local cF=${${(M)P:#ln=*}#ln=} cB=${${(M)P:#or=*}#or=}
+    : ${cS:='1;38;5;39'} ${cH:='38;5;114'} ${cF:='38;5;244'} ${cB:='38;5;203'}
+    local S=$'\e['"${cS}m" H=$'\e['"${cH}m" F=$'\e['"${cF}m" B=$'\e['"${cB}m" \
+          D=$'\e[38;5;242m' R=$'\e[0m' K=$'\e[K'
+    local -i g=0; [[ -f "$PROMPT_HOME/glow" ]] && g=$(<"$PROMPT_HOME/glow")
+    local ls=${_prompt_lscolors[$thm]}
+    (( g )) && ls=$(_pr_ls_glowed "$ls")
+    local -a Q=(${(s.:.)ls})
+    local di=${${(M)Q:#di=*}#di=} ln=${${(M)Q:#ln=*}#ln=} ex=${${(M)Q:#ex=*}#ex=}
+    local or=${${(M)Q:#or=*}#or=} me=${${(M)Q:#\*.png=*}#\*.png=}
+    local icon=${${(z)_prompt_themes[$thm]}[1]}
+    local -i w=$COLUMNS n=${#_thmlist} i
+    local -i tvis=$(( LINES - 9 )); (( tvis < 4 )) && tvis=4
+    (( thmsel <= toff ))       && toff=$(( thmsel - 1 ))
+    (( thmsel > toff + tvis )) && toff=$(( thmsel - tvis ))
+    print -n '\e[H'
+    print -r -- "🎨 ${F}themes ${(pl:$(( w - 10 ))::$_hop_h2:):-}${R}${K}"
+    local t chk mark nc
+    for (( i = toff + 1; i <= n && i <= toff + tvis; i++ )); do
+        t=${_thmlist[i]} chk=' ' mark='  ' nc=$D
+        [[ $t == $thm0 ]] && chk="${H}${_hop_chk}${R}"
+        (( i == thmsel )) && { mark="${H}${_hop_ptr} ${R}"; nc=$S; }
+        print -r -- "${mark}${D}${(l:2:)i}${R} ${chk} ${nc}${(r:12:)${t[1,12]}}${R}${K}"
+    done
+    print -r -- "${F}${_hop_h2} preview ${(pl:$(( w - 10 ))::$_hop_h2:):-}${R}${K}"
+    local pch='❯'; (( _hop_utf )) || pch='>'
+    print -r -- "${icon} ${H}${pch}${R} ${F}on main${R} ${B}${_hop_dot}${R}${K}"
+    print -- "\e[${di}mdir/\e[0m \e[${ln}mln@\e[0m \e[${ex}mbin*\e[0m \e[${me}mimg\e[0m \e[${or}mgone@\e[0m${K}"
+    print -r -- "${F}${(pl:$w::$_hop_h2:):-}${R}${K}"
+    local ent='⏎'; (( _hop_utf )) || ent='cr'
+    print -r -- "${D}${ent} keep  g glow${R}${K}"
+    print -r -- "${D}esc undo${R}${K}"
+    print -r -- "${D}${_hop_idot} glow ${${${g/#1/on}}/#0/off}${R}${K}"
+    print -rn -- $'\e[J'
 }
 
-_hop_menu() {
-    _hop_colors
-    _hop_load
-    (( ${#_hop_pids} )) || { print -u2 "hop: no live sessions registered yet"; return 1 }
-    local -i sel=1 off=0 n=${#_hop_pids}
-    local k k2 k3
-    _hop_msg='' _hop_result=''
-    # terminals running code from before hop existed register only after a
-    # restart / re-source — worth saying when the list looks lonely
-    (( n == 1 )) && _hop_msg="only this shell — others join after: source ~/.zshrc"
-    print -rn -- $'\e[?1049h\e[?25l\e[2J'
+_hop_sidebar() {
+    _hop_in_hub || { print -u2 "hop: _sidebar only runs inside the hub"; return 1 }
+    _hop_tm set -p -t "$TMUX_PANE" @hop_sb 1
+    print -n '\e[?25l\e[2J'
+    local junk mode=sessions thm0=''
+    local -i thmsel=1 toff=0 glow0=0
+    local -a _thmlist=(${(ok)_prompt_themes})
     {
         while :; do
-            (( sel <= off ))     && off=$(( sel - 1 ))
-            (( sel > off + 9 ))  && off=$(( sel - 9 ))
-            _hop_draw
-            read -sk1 k 2>/dev/null || break
-            _hop_msg=''
-            case $k in
-                $'\e')
-                    if read -sk1 -t 0.05 k2 2>/dev/null && [[ $k2 == '[' ]]; then
-                        read -sk1 -t 0.2 k3 2>/dev/null
-                        case $k3 in
-                            A) (( sel > 1 )) && (( sel-- )) ;;
-                            B) (( sel < n )) && (( sel++ )) ;;
-                        esac
-                    else
-                        break
-                    fi ;;
-                k) (( sel > 1 )) && (( sel-- )) ;;
-                j) (( sel < n )) && (( sel++ )) ;;
-                [1-9]) local -i jmp=$k
-                    (( jmp <= n )) && { sel=jmp; _hop_switch ${_hop_pids[sel]} && break } ;;
-                $'\r'|$'\n') _hop_switch ${_hop_pids[sel]} && break ;;
-                t|T) _hop_teleport ${_hop_pids[sel]} && break ;;
-                r|R) _hop_rename ${_hop_pids[sel]} ;;
-                q|Q) break ;;
-            esac
+            if [[ $mode == themes ]]; then _hop_sb_draw_themes; else _hop_sb_draw; fi
+            _pr_readkey 3 || continue      # 3s tick: pick up outside changes
+            if [[ $mode == themes ]]; then
+                case $REPLY in
+                    j|down) (( thmsel < ${#_thmlist} )) && { (( thmsel++ )); _hop_sb_theme_apply } ;;
+                    k|up)   (( thmsel > 1 )) && { (( thmsel-- )); _hop_sb_theme_apply } ;;
+                    [1-9])  (( REPLY <= ${#_thmlist} )) && { thmsel=$REPLY; _hop_sb_theme_apply } ;;
+                    g|G) (( _prompt_glow ^= 1 )) || :
+                         print -r -- $_prompt_glow > "$PROMPT_HOME/glow" 2>/dev/null
+                         _hop_sb_theme_apply ;;
+                    $'\r'|$'\n'|t|T) mode=sessions ;;      # keep what you see
+                    esc|q|Q)                                # undo theme + glow
+                        _prompt_glow=$glow0
+                        print -r -- $glow0 > "$PROMPT_HOME/glow" 2>/dev/null
+                        _prompt_use "$thm0" 2>/dev/null
+                        mode=sessions ;;
+                esac
+            else
+                case $REPLY in
+                    j|down) _hop_sb_move next ;;
+                    k|up)   _hop_sb_move prev ;;
+                    [1-9]) _hop_sb_move $REPLY ;;
+                    $'\r'|$'\n') _hop_tm select-pane -R 2>/dev/null ;;
+                    t|T) mode=themes
+                         thm0=$_prompt_current
+                         [[ -r "$PROMPT_HOME/current" ]] && thm0=$(<"$PROMPT_HOME/current")
+                         glow0=0; [[ -f "$PROMPT_HOME/glow" ]] && glow0=$(<"$PROMPT_HOME/glow")
+                         thmsel=${_thmlist[(Ie)$thm0]}; (( thmsel )) || thmsel=1
+                         toff=0 ;;
+                    r|R) _hop_sb_rename ;;
+                    n|N) _hop_sb_new ;;
+                    x|X) _hop_sb_kill ;;
+                    d|D) _hop_tm detach-client ;;
+                    q|Q) _hop_tm kill-pane -t "$TMUX_PANE" ;;
+                esac
+            fi
+            # drain type-ahead: a held-down arrow must not queue moves that
+            # keep firing after the key is released
+            while read -sk1 -t 0 junk 2>/dev/null; do :; done
         done
     } always {
-        print -rn -- $'\e[?25h\e[?1049l'
+        print -n '\e[?25h'
     }
-    [[ -n $_hop_result ]] && print -r -- "hop: $_hop_result"
-    return 0
 }
 
+# ── the command ─────────────────────────────────────────────────────────────
 hop() {
-    case ${1:-menu} in
-        menu|'') _hop_menu ;;
+    case ${1:-go} in
+        go|'')
+            if _hop_in_hub; then
+                _hop_sb_focus
+            elif [[ -n $TMUX ]]; then
+                print -u2 "hop: you're inside another tmux — run hop from a plain terminal (nesting isn't supported)"
+                return 1
+            else
+                _hop_hub_attach
+            fi ;;
         name)
             shift
             local nm=$(_hop_clean "$*")
             [[ -n $nm ]] || { print -u2 "usage: hop name <label>"; return 1 }
-            _hop_setname $$ "$nm"
-            print -r -- "hop: this terminal is now '$nm'" ;;
+            if _hop_in_hub; then
+                _hop_tm rename-window -- "$nm"
+                print -r -- "hop: session is now '$nm'"
+            else
+                TERM_SESSION_NAME=$nm
+                _pr_sess_title; _pr_sess_write
+                print -r -- "hop: this terminal is now '$nm' (outside the hub — run hop to join it)"
+            fi ;;
         list)
-            _hop_load
-            local p
-            for p in $_hop_pids; do
-                printf '%8s  %-16s %-28s %s\n' "$p" "${_hop_d[$p,name]:--}" \
-                    "${(D)_hop_d[$p,cwd]}" "${_hop_d[$p,cmd]}"
-            done ;;
+            if (( $+commands[tmux] )) && _hop_tm has-session -t hub 2>/dev/null; then
+                print -r -- "hub sessions:"
+                _hop_tm list-windows -t hub -F '  #{window_index}  #{window_name}'
+            else
+                print -r -- "hub not running — start it with: hop"
+            fi ;;
         help|-h|--help)
-            print -r -- 'hop — jump between your terminals
-  hop              open the panel: ↑↓/jk move, 1-9 jump, ⏎ switch,
-                   t teleport (cd to its dir), r rename (sets the tab
-                   title too), q quit. ⤫ marks unreachable terminals.
-  hop name <label> name this terminal
-  hop list         plain listing (for scripts)
-Switching: tmux pane → true switch; macOS/X11/Windows-Terminal windows →
-focus by title (name your terminals!). When nothing can reach the target,
-Enter explains instead of guessing; t explicitly brings its cwd here.' ;;
+            print -r -- 'hop — your terminals, multiplexed (tmux-backed hub)
+  hop              outside the hub: attach (creates it first time)
+                   inside the hub:  jump to the sidebar
+  hop name <n>     rename the current session
+  hop list         list hub sessions from anywhere
+Sidebar: ↑↓/jk browse (right pane follows) · 1-9 jump · ⏎ into session
+         r rename · n new · x kill · t themes · d detach · q hide
+Themes mode (t): browse re-themes the whole hub live; ⏎ keep, esc undo,
+g glow. Sessions keep running when you close the terminal; hop brings you
+back. HOP_AUTO=1 auto-joins every new shell as its own hub session; plain
+terminals that have not joined appear under "outside" (list-only — a
+running pty cannot be moved into the hub).' ;;
+        _sidebar) _hop_sidebar ;;
         *) print -u2 "hop: unknown command '$1' (try: hop help)"; return 1 ;;
     esac
 }
-compdef '_arguments "1:cmd:(menu name list help)"' hop 2>/dev/null
+compdef '_arguments "1:cmd:(name list help)"' hop 2>/dev/null

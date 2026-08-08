@@ -257,7 +257,31 @@ _pr_ls_swatch() {   # one-line file-color preview, used by the gallery
 # prepending their own "(venv)" to the prompt.
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-# ── session registry + hop (terminal switcher) + theme picker panel ─────────
+# ── shared key reader for the panels (hop sidebar, theme menu) ──────────────
+# Sets $REPLY to: up · down · esc · a literal char. Returns 1 on timeout.
+# Swallows COMPLETE escape sequences — CSI with parameters (modified arrows,
+# Delete \e[3~, F-keys \e[15~, SGR mouse), and SS3 — so stray bytes never
+# leak into the caller's key handling as fake keystrokes.
+_pr_readkey() {   # [first-read timeout, seconds]
+    local k
+    REPLY=''
+    read -sk1 -t ${1:-3} k 2>/dev/null || return 1
+    if [[ $k != $'\e' ]]; then REPLY=$k; return 0; fi
+    read -sk1 -t 0.1 k 2>/dev/null || { REPLY=esc; return 0 }
+    if [[ $k == '[' ]]; then
+        local fin=''
+        while read -sk1 -t 0.1 k 2>/dev/null; do
+            [[ $k == [@-~] ]] && { fin=$k; break }   # CSI final byte
+        done
+        case $fin in A) REPLY=up ;; B) REPLY=down ;; esac
+    elif [[ $k == O ]]; then
+        read -sk1 -t 0.1 k 2>/dev/null
+        case $k in A) REPLY=up ;; B) REPLY=down ;; esac
+    fi                                               # \e+other: alt-chord, drop
+    return 0
+}
+
+# ── session registry + hop (terminal hub) + theme picker panel ──────────────
 [[ -r "$PROMPT_HOME/sessions.zsh" ]] && source "$PROMPT_HOME/sessions.zsh"
 [[ -r "$PROMPT_HOME/hop.zsh"      ]] && source "$PROMPT_HOME/hop.zsh"
 [[ -r "$PROMPT_HOME/menu.zsh"     ]] && source "$PROMPT_HOME/menu.zsh"
@@ -294,6 +318,7 @@ _prompt_use() {
     _prompt_apply_lscolors $name
     _prompt_current=$name
     print -r -- "$name" > "$PROMPT_HOME/current" 2>/dev/null
+    typeset -f _hop_theme_sync >/dev/null && _hop_theme_sync
 }
 
 _prompt_list() {
@@ -346,3 +371,30 @@ _prompt_apply_$_prompt_current
 _prompt_expand_paths
 _prompt_glowify
 _prompt_apply_lscolors $_prompt_current
+
+# ── shells follow the persisted theme (PROMPT_FOLLOW=0 to opt out) ──────────
+# When any shell — or hop's themes mode — switches theme or glow, every other
+# running shell adopts it at its next prompt. Two builtin file reads per
+# prompt, no forks; full-screen apps are untouched until you're back at a
+# prompt.
+_prompt_follow() {
+    (( ${PROMPT_FOLLOW:-1} )) || return 0
+    local t=$_prompt_current g=0
+    [[ -r "$PROMPT_HOME/current" ]] && t=$(<"$PROMPT_HOME/current")
+    [[ -f "$PROMPT_HOME/glow" ]] && g=$(<"$PROMPT_HOME/glow")
+    [[ $t == $_prompt_current && $g == $_prompt_glow ]] && return 0
+    [[ -n ${_prompt_themes[$t]} ]] || return 0
+    _prompt_glow=$g
+    _prompt_apply_$t
+    _prompt_expand_paths
+    _prompt_glowify
+    _prompt_apply_lscolors $t
+    _prompt_current=$t
+}
+add-zsh-hook precmd _prompt_follow
+
+# HOP_AUTO=1 (set before the managed block): every new plain terminal joins
+# the hop hub automatically; detaching lands you back in this outer shell.
+(( ${HOP_AUTO:-0} )) && [[ -z $TMUX && -t 0 && -t 1 ]] && \
+    (( ${+functions[_hop_hub_attach]} && ${+commands[tmux]} )) && \
+    _hop_hub_attach --own-window

@@ -5,6 +5,7 @@
 # swept by hop when a pid turns out dead.
 
 [[ -o interactive ]] || return
+(( ${HOP_SB:-0} )) && return   # hop's sidebar shells are chrome, not sessions
 
 typeset -g _PR_SESS_DIR="$PROMPT_HOME/sessions"
 typeset -g _PR_SESS_FILE="$_PR_SESS_DIR/$$.session"

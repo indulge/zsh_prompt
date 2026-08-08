@@ -33,7 +33,7 @@ prompt-theme peacock    # switch now, remembered next time
 theme                   # 🎨 panel: browse themes w/ full preview + effects
 prompt-theme random     # surprise me
 prompt-theme glow       # ✨ toggle glow: bold prompt & file colors
-hop                     # 🐇 panel: list / preview / rename / jump terminals
+hop                     # 🐇 the hub: all your sessions, sidebar + live pane
 ```
 
 ### `theme` — the picker panel
@@ -77,118 +77,128 @@ palette, so **folder names, symlinks, executables, broken links, archives and
 media** in `ls`, `tree`, `fd` and tab-completion listings switch with the
 theme too.
 
-## hop 🐇 — jump between your terminals
+## hop 🐇 — your terminals, multiplexed
 
-Every shell running this prompt registers itself in a tiny session registry
-(`sessions/`, one file per shell — created automatically, cleaned on exit).
-`hop` opens an in-terminal panel over it: scroll through your terminals with
-a live preview, name them for your own reference, press Enter to jump.
-Pure zsh + ANSI escapes — no tmux required, no fzf, no dependencies, works
-over SSH, on x86 and ARM alike.
+`hop` gives you one place where all your sessions live: a left sidebar
+listing them (name them, rename them, kill them, spawn new ones) and a right
+pane that **is** the actual terminal — claude, vim, top, a build, anything,
+at full fidelity. Nothing to alt-tab to: switching sessions is an
+in-terminal operation, identical on every platform.
 
 ```
-╔═ hop ─ 3 shells ═══════════════════════════════════════╗
-║    1 · api-server      ~/projects/bookbase  (this shell)║
-║ ▸  2 ● notes-vim       ~/notes              vim journal ║
-║    3 · scratch         ~/tmp                —           ║
-╟────────────────────────────────────────────────────────╢
-║ notes-vim · tty pts/7 · pid 4211 · on main             ║
-║ cwd:  ~/notes                                          ║
-║ last: vim journal.md ▸ 0 · 2m ago                      ║
-╟────────────────────────────────────────────────────────╢
-║ ↑↓/jk move · 1-9 jump · ⏎ switch · r rename · q quit   ║
-╚════════════════════════════════════════════════════════╝
+┌─ 🦚 hop ───────┬──────────────────────────────────────────────┐
+│ ▸ 1 ● claude   │  $ claude                                    │
+│   2 · api      │  ╭─ Claude Code ────────────────────────╮    │
+│   3 · notes    │  │ ...actual live session...            │    │
+│                │  ╰──────────────────────────────────────╯    │
+│ ⏎ open  r name │                                              │
+│ n new   x kill │     (a real terminal, full fidelity —        │
+│ d detach q hide│      tmux is the emulator underneath)        │
+│ · peacock      │                                              │
+└────────────────┴──────────────────────────────────────────────┘
 ```
+
+Under the hood it's a dedicated tmux server (own socket — it never touches
+any tmux you already use) called the **hub**. Every session is a named
+window in it; the sidebar is a themed zsh script in a slim pane.
 
 ```sh
-hop              # open the panel
-hop name api     # name this terminal "api" (no panel needed)
-hop list         # plain listing, for scripts
+hop              # outside the hub: attach — creates it the first time
+                 # inside the hub:  jump back to the sidebar from anywhere
+hop name api     # rename the current session
+hop list         # list hub sessions from any terminal
 hop help         # cheat sheet
 ```
 
-**Keys:** `↑↓` or `j/k` move (the preview follows) · `1-9` jump straight to a
-row · `⏎` switch · `t` teleport (cd this shell to the target's directory) ·
-`r` rename the selected terminal · `q`/`Esc` quit.
-`●` marks a terminal where a command is running right now, `·` one at rest,
-`⤫` one that no switch backend can reach from here (the preview's `jump:`
-line says exactly what `⏎` would do, before you press it).
-The panel is drawn in your active theme's colors — matrix gets a green panel,
-crt an amber one. Box-drawing falls back to pure ASCII automatically in
-non-UTF-8 locales (or force it with `HOP_ASCII=1`).
+**Sidebar keys:** `↑↓`/`j k` browse — the right pane switches live as you
+move · `1-9` jump · `⏎` into the session · `r` rename (also lands in the
+terminal-tab title) · `n` new session · `x` kill (asks first) · `t` themes
+mode (below) · `d` detach · `q` hide the sidebar (`hop` brings it back).
 
-**Naming** is the heart of it: `r` (or `hop name`) stores the name in the
-registry *and* writes it into the terminal's tab/window title. So your names
-also show up in your terminal's own tab bar, and hop's window-focus backends
-find windows by exactly those titles. Renaming another session takes effect
-at its next prompt. Names survive `cd`s and long-running commands; they die
-with the shell.
+**Themes mode (`t`):** the rail flips to the theme list and browsing IS
+previewing — every `j`/`k` applies the highlighted theme for real: the rail
+re-inks, the hub's borders recolor, and every running shell follows at its
+next prompt. A compact preview shows the theme's glyphs and file colors.
+`⏎` keeps what you see, `Esc` restores the theme *and* glow you entered
+with, `g` toggles glow live. (`PROMPT_FOLLOW=0` stops shells from following
+the persisted theme.)
 
-**What Enter actually does** — hop works out each terminal's reachability up
-front and never guesses:
+```
+🎨 themes ──────────────
+  1 ✓ forest
+▸ 2   matrix
+  3   dracula        ↓ …
+─ preview ──────────────
+💊 ❯ on main ●
+dir/ ln@ bin* img gone@
+────────────────────────
+⏎ keep  g glow
+esc undo
+· glow off
+```
 
-| # | environment | result |
-|---|-------------|--------|
-| 1 | both shells inside the same tmux server | true switch to that session/window/pane |
-| 2 | macOS (Terminal.app or iTerm2) | focuses the window/tab by title, via `osascript` |
-| 3 | WSL with `powershell.exe` reachable | raises the Windows Terminal **window** whose front tab carries the name |
-| 4 | Linux X11 with `wmctrl` or `xdotool` installed | focuses the window by title |
-| 5 | nothing can reach it (`⤫` in the list) | `⏎` tells you why and stays — no surprise side effects |
+**The "outside" section:** plain terminals that never joined the hub are
+listed dimly under `─ outside ─` (from the session registry) so the rail
+shows *all* running terminals. They're list-only — an already-running shell
+sits on its own pty and physically cannot be moved into tmux — so to make
+everything switchable, let new tabs join (below) and start work inside the
+hub.
 
-Teleport — `cd`ing *this* shell to the target's directory — never happens on
-its own; it's the explicit `t` key, and it brings only the cwd (not the other
-terminal's theme, history, or whatever is running there).
+**Jumping between the panes:** **`Alt+h`** → sidebar, **`Alt+l`** → session
+pane (vim-style h/l). Both work even while claude, vim, or top own the pane,
+because tmux intercepts the keys before the app sees them — and `Alt+h`
+respawns the sidebar if you had hidden it. At a shell prompt, typing `hop`
+also lands you on the sidebar; tmux's own `C-b o` / `C-b ←→` work too. From
+the sidebar, `⏎` is the same as `Alt+l`.
 
-Honesty corner: no OS offers a portable "focus that other terminal window"
-primitive, which is why the ladder exists. The live screen preview inside the
-panel (last lines of what the other terminal shows) appears only for tmux
-panes — nothing else can read another terminal's screen.
+**Layout:** the sidebar takes 20% of the window (set `HOP_WIDTH=25%` — or a
+column count like `HOP_WIDTH=30` — before the managed block to change it);
+resizing the terminal window resizes both sides proportionally, and the
+sidebar adapts its columns to whatever width it gets.
 
-### Linux
+**Sessions survive.** Close the terminal window, reboot your laptop's
+emulator, come back tomorrow — `hop` reattaches and everything is still
+running. `d` detaches on purpose; the hub keeps working in the background.
 
-Works out of the box; how far Enter gets depends on your display stack:
+**It wears your theme.** The sidebar, its highlights, and the hub's pane
+split lines all draw in the active prompt theme's palette — and re-ink
+themselves live when you switch (`theme`, `prompt-theme matrix`, …), matrix
+green to crt amber, sidebar and borders alike. The theme's emoji sits in the
+sidebar header and the theme name in its footer.
 
-- **Best: run your shells in tmux** (`sudo apt install tmux` / `dnf install
-  tmux`). Any hop from inside tmux to another tmux pane is a real switch —
-  including between sessions — and previews go live.
-- **X11 desktops:** install one small helper for window focus:
-  `sudo apt install wmctrl` (or `xdotool`). Name your terminals (`hop name
-  api`) — focus matches on the title.
-- **Wayland** (default GNOME/KDE on recent distros): there is no standard
-  window-activation protocol, so cross-window focus isn't attempted. Use
-  tmux for real switching, or rely on named tab titles + your desktop's own
-  switcher; Enter otherwise teleports.
-- **SSH / bare consoles:** registry, naming, preview and teleport all work;
-  use tmux on the remote host for true switching.
+**Auto-join** (recommended): `HOP_AUTO=1` before the managed block in
+`~/.zshrc` makes every new terminal tab attach to the hub **as its own
+fresh session** — open three tabs, and all three appear in every sidebar,
+switchable from anywhere. Each tab is an independent view (its own current
+session, same shared list). `d` detaches back to the plain outer shell;
+`HOP_AUTO=0` turns it off.
 
-### macOS
+### Dependencies & platforms
 
-Works out of the box — `osascript` ships with the OS.
+The prompt, themes, glow, and the `theme` panel need **zsh ≥ 5.0 and
+nothing else**. `hop` needs exactly one extra thing: **tmux** (≥ 3.0; it is
+the terminal emulator that makes a live right pane possible — a shell
+script alone cannot be one).
 
-1. Name your terminals (`hop name api`) — focus needs titles to match on.
-2. First switch: macOS asks to let your terminal control
-   Terminal/iTerm2 — approve it (System Settings ▸ Privacy & Security ▸
-   Automation). One-time.
-3. Terminal.app and iTerm2 are both supported; hop reads which one the
-   target runs in from the registry.
-4. tmux users get backend 1 automatically, same as Linux.
+| platform | install tmux | notes |
+|---|---|---|
+| Ubuntu / Debian / **WSL2** | `sudo apt install tmux` | works in Windows Terminal, ConEmu, anything |
+| Fedora / RHEL | `sudo dnf install tmux` | |
+| Arch | `sudo pacman -S tmux` | |
+| Alpine | `apk add tmux` | |
+| macOS — Apple Silicon & Intel | `brew install tmux` (or MacPorts) | Terminal.app and iTerm2 both fine |
+| SSH / headless / ARM boards | distro package, same as above | tmux is plain C — every arch |
 
-### Windows
+Everything else about hop is dependency-free zsh. If tmux is missing, `hop`
+says so and tells you the install line for your platform; the rest of the
+package works untouched.
 
-Run zsh inside **WSL2** (Ubuntu etc.) with **Windows Terminal**:
+**Windows note:** run the package inside WSL2 (any distro). The hub replaces
+the old tab-juggling entirely — your Claude/build/notes sessions all live in
+one Windows Terminal tab, and survive closing it.
 
-- The panel, naming, previews and teleport all work as on Linux.
-- **Separate WT windows: switchable.** Name your terminals (`hop name api`)
-  and hop raises the right Windows Terminal window by its title (via
-  `powershell.exe` AppActivate — first call takes a second to spin up).
-- **Tabs inside one window: not reachable from WSL** — no API exposes them.
-  Those rows show `⤫`; your `hop name`s still land in each tab's title, so
-  pick with `Ctrl+Tab`, the tab dropdown, or the command palette. `⏎` on
-  such a row explains this instead of doing something you didn't ask for.
-- For true in-place tab switching, run tmux inside WSL — hop then switches
-  panes for real, and you keep one Windows Terminal tab total.
-- Git-Bash/Cygwin zsh: untested; the registry and teleport are plain POSIX
-  files + escapes and should behave like the SSH case.
+**Nesting note:** `hop` inside a *different* tmux/screen session refuses
+politely rather than nesting — run it from a plain terminal.
 
 ## श्लोक — verses, offline, any time
 
@@ -224,7 +234,9 @@ rotation automatically.
 - 🙏 **Farewell:** leaving the shell prints धन्यवाद with your session stats.
 
 Knobs (set before the managed block in `~/.zshrc`): `PROMPT_BANNER=0`,
-`PROMPT_SHLOK=0`, `PROMPT_KARMA=0`, `PROMPT_FAREWELL=0`.
+`PROMPT_SHLOK=0`, `PROMPT_KARMA=0`, `PROMPT_FAREWELL=0`, `PROMPT_FOLLOW=0`
+(shells stop following theme switches made elsewhere), `HOP_AUTO=1`
+(new terminals auto-join the hop hub).
 
 ## Themes
 
