@@ -18,12 +18,12 @@ if (( ${HOP_ASCII:-0} )) || [[ ${(U)LANG}${(U)LC_ALL} != *UTF*8* ]]; then
     typeset -g  _hop_utf=0
     typeset -g _hop_tl='+' _hop_tr='+' _hop_bl='+' _hop_br='+' _hop_hh='=' \
                _hop_v='|' _hop_ml='+' _hop_mr='+' _hop_h2='-' _hop_ptr='>' \
-               _hop_dot='*' _hop_idot='.'
+               _hop_dot='*' _hop_idot='.' _hop_nox='x'
 else
     typeset -g  _hop_utf=1
     typeset -g _hop_tl='╔' _hop_tr='╗' _hop_bl='╚' _hop_br='╝' _hop_hh='═' \
                _hop_v='║' _hop_ml='╟' _hop_mr='╢' _hop_h2='─' _hop_ptr='▸' \
-               _hop_dot='●' _hop_idot='·'
+               _hop_dot='●' _hop_idot='·' _hop_nox='⤫'
 fi
 
 # ── palette lifted from the active theme's file colors ──────────────────────
@@ -41,6 +41,10 @@ _hop_load() {   # fill _hop_pids (self first, then newest activity), _hop_d
     _hop_pids=(); _hop_d=()
     local f pid line
     local -a byage=()
+    for f in "$_PR_SESS_DIR"/*.rename(N); do   # orphaned rename handoffs
+        pid=${${f:t}%.rename}
+        kill -0 $pid 2>/dev/null || command rm -f "$f"
+    done
     for f in "$_PR_SESS_DIR"/*.session(N); do
         pid=${${f:t}%.session}
         [[ $pid == <-> ]] || continue
@@ -53,6 +57,25 @@ _hop_load() {   # fill _hop_pids (self first, then newest activity), _hop_d
     byage=(${(O)byage})
     _hop_pids=(${byage#* })
     (( ${_hop_pids[(Ie)$$]} )) && _hop_pids=($$ ${_hop_pids:#$$})
+    # how (whether) we can actually switch to each one from THIS shell —
+    # decided up front so the list and preview can be honest about it
+    local reach
+    for pid in $_hop_pids; do
+        reach=none
+        if [[ -n ${_hop_d[$pid,tmux]} && -n $TMUX ]] && (( $+commands[tmux] )) && \
+           command tmux display-message -pt "${_hop_d[$pid,tmux]}" '#{session_name}' >/dev/null 2>&1; then
+            reach=tmux
+        elif [[ -n ${_hop_d[$pid,name]} ]]; then
+            if [[ $OSTYPE == darwin* ]]; then
+                reach=mac
+            elif [[ -n ${WSL_DISTRO_NAME:-}${WSL_INTEROP:-} ]] && (( $+commands[powershell.exe] )); then
+                reach=wsl          # window-level focus, best effort
+            elif [[ -n $DISPLAY ]] && (( $+commands[wmctrl] || $+commands[xdotool] )); then
+                reach=x11
+            fi
+        fi
+        _hop_d[$pid,reach]=$reach
+    done
 }
 
 _hop_setname() {   # <pid> <name> — registry now; the live shell adopts it
@@ -73,9 +96,9 @@ _hop_setname() {   # <pid> <name> — registry now; the live shell adopts it
     print -r -- "$nm" > "$_PR_SESS_DIR/$pid.rename"
 }
 
-_hop_clean() {   # names travel into window titles & AppleScript — keep tame
+_hop_clean() {   # names travel into titles, AppleScript & PowerShell — tame them
     local nm=${1//[[:cntrl:]]/}
-    nm=${nm//[\"\\\`;]/}
+    nm=${nm//[\"\'\\\`;]/}
     print -rn -- "${nm[1,24]}"
 }
 
@@ -122,45 +145,70 @@ _hop_focus_mac() {   # <title> <term_program> — osascript ships with macOS
     esac
 }
 
+_hop_focus_wsl() {   # <title> — raise the Windows Terminal *window* whose
+    local out          # front tab carries this title (background tabs can't
+    out=$(command powershell.exe -NoProfile -Command \
+        "(New-Object -ComObject WScript.Shell).AppActivate('$1')" 2>/dev/null)
+    [[ ${out%%$'\r'*} == True ]]
+}
+
+# Enter never guesses: it switches when a backend can actually reach the
+# target, otherwise it explains why and stays in the menu. Teleport (cd to
+# the target's directory — cwd only, none of that terminal's session) is
+# its own explicit key: t.
 _hop_switch() {   # <pid> → 0: done, leave the menu · 1: stay in the menu
     local pid=$1
     [[ $pid == $$ ]] && { _hop_msg="you are already here"; return 1 }
     local name=${_hop_d[$pid,name]} pane=${_hop_d[$pid,tmux]}
-    local cwd=${_hop_d[$pid,cwd]}  term=${_hop_d[$pid,term]}
-    # 1 · tmux — a real switch, when both of us live in this tmux server
-    if [[ -n $pane && -n $TMUX ]] && (( $+commands[tmux] )); then
-        local sess
-        sess=$(command tmux display-message -pt "$pane" '#{session_name}' 2>/dev/null)
-        if [[ -n $sess ]]; then
+    case ${_hop_d[$pid,reach]} in
+        tmux)
+            local sess
+            sess=$(command tmux display-message -pt "$pane" '#{session_name}' 2>/dev/null)
             command tmux switch-client -t "$sess" 2>/dev/null
             command tmux select-window -t "$pane" 2>/dev/null
             command tmux select-pane   -t "$pane" 2>/dev/null
             _hop_result="switched to tmux pane $pane (${name:-unnamed})"
-            return 0
-        fi
-    fi
-    # 2 · window focus by title — needs a name, that's what titles carry
-    if [[ -n $name ]]; then
-        if [[ $OSTYPE == darwin* ]]; then
-            _hop_focus_mac "$name" "$term" && \
-                { _hop_result="focused window '$name'"; return 0 }
-        elif [[ -n $DISPLAY ]]; then
+            return 0 ;;
+        mac)
+            if _hop_focus_mac "$name" "${_hop_d[$pid,term]}"; then
+                _hop_result="focused window '$name'"; return 0
+            fi
+            _hop_msg="no window titled '$name' found ${_hop_idot} t teleports"
+            return 1 ;;
+        x11)
             if (( $+commands[wmctrl] )) && command wmctrl -a "$name" 2>/dev/null; then
                 _hop_result="focused window '$name' (wmctrl)"; return 0
             elif (( $+commands[xdotool] )) && \
                  command xdotool search --name "$name" windowactivate 2>/dev/null; then
                 _hop_result="focused window '$name' (xdotool)"; return 0
             fi
-        fi
-    fi
-    # 3 · teleport — can't move your eyes, so bring its context here
+            _hop_msg="no window titled '$name' found ${_hop_idot} t teleports"
+            return 1 ;;
+        wsl)
+            if _hop_focus_wsl "$name"; then
+                _hop_result="focused Windows Terminal window '$name'"; return 0
+            fi
+            _hop_msg="'$name' isn't a front tab — Ctrl+Tab to it ${_hop_idot} t teleports"
+            return 1 ;;
+        *)
+            if [[ -n $name ]]; then
+                _hop_msg="no switch path — its tab is titled '$name' ${_hop_idot} t teleports"
+            else
+                _hop_msg="no switch path — r names it (shows in tab bar) ${_hop_idot} t teleports"
+            fi
+            return 1 ;;
+    esac
+}
+
+_hop_teleport() {   # <pid> — explicit: bring its cwd here, nothing else
+    local cwd=${_hop_d[$1,cwd]}
     if [[ -d $cwd ]]; then
         cd -- "$cwd"
-        _hop_result="can't focus that window here — teleported to ${(D)cwd}"
-    else
-        _hop_result="can't focus that window, and its cwd is gone"
+        _hop_result="teleported to ${(D)cwd} (cwd only — not that terminal's session)"
+        return 0
     fi
-    return 0
+    _hop_msg="its cwd is gone"
+    return 1
 }
 
 # ── the panel ───────────────────────────────────────────────────────────────
@@ -189,6 +237,7 @@ _hop_draw() {   # uses: sel off  ·  sets: nothing (pure redraw)
         [[ $p == $$ ]] && cm='(this shell)'
         local dot="${D}${_hop_idot}${R}" mark='  ' nmC=''
         [[ ${_hop_d[$p,state]} == run ]] && dot="${H}${_hop_dot}${R}"
+        [[ ${_hop_d[$p,reach]} == none && $p != $$ ]] && mark="${D}${_hop_nox} ${R}"
         [[ $p == $$ ]] && nmC=$D
         (( i == sel )) && { mark="${H}${_hop_ptr} ${R}"; nmC=$S; }
         print -r -- "${F}${_hop_v}${R} ${mark}${D}${(l:2:)i}${R} ${dot} ${nmC}${(r:16:)${nm[1,16]}}${R} ${D}${(r:24:)cw}${R} ${D}${(r:rest:)${cm[1,rest]}}${R} ${F}${_hop_v}${R}${K}"
@@ -204,7 +253,20 @@ _hop_draw() {   # uses: sel off  ·  sets: nothing (pure redraw)
     local exC=$H; [[ $ex != 0 ]] && exC=$B
     local last="last: ${_hop_d[$p,cmd]:-—} ${_hop_ptr} ${ex} ${_hop_idot} $(_hop_ago ${_hop_d[$p,at]}) ago"
     local cwl="cwd:  ${(D)_hop_d[$p,cwd]}"
-    for meta in "$meta" "$cwl" "$last"; do
+    local jmp
+    case ${_hop_d[$p,reach]} in
+        tmux) jmp="jump: real switch — tmux pane ${_hop_d[$p,tmux]}" ;;
+        mac)  jmp="jump: focuses the window titled '${nm}'" ;;
+        x11)  jmp="jump: focuses the window titled '${nm}'" ;;
+        wsl)  jmp="jump: raises the WT window fronting '${nm}' ${_hop_idot} t = cwd here" ;;
+        *)    if [[ $p == $$ ]]; then jmp="jump: you are here"
+              elif [[ -n ${_hop_d[$p,name]} ]]; then
+                  jmp="jump: none from here ${_hop_idot} tab titled '${nm}' ${_hop_idot} t = cwd here"
+              else
+                  jmp="jump: none ${_hop_idot} r names it for the tab bar ${_hop_idot} t = cwd here"
+              fi ;;
+    esac
+    for meta in "$meta" "$cwl" "$last" "$jmp"; do
         print -r -- "${F}${_hop_v}${R} ${(r:$(( inner - 2 )):)${meta[1,$(( inner - 2 ))]}} ${F}${_hop_v}${R}${K}"
     done
     # live pane tail — only tmux can show another terminal's screen
@@ -218,8 +280,8 @@ _hop_draw() {   # uses: sel off  ·  sets: nothing (pure redraw)
 
     # footer
     print -r -- "${F}${_hop_ml}${(pl:$(( W - 2 ))::$_hop_h2:):-}${_hop_mr}${R}${K}"
-    local keys=" ↑↓/jk move ${_hop_idot} 1-9 jump ${_hop_idot} ⏎ switch ${_hop_idot} r rename ${_hop_idot} q quit "
-    (( _hop_utf )) || keys=" up/dn jk move . 1-9 jump . Enter switch . r rename . q quit "
+    local keys=" ↑↓/jk move ${_hop_idot} ⏎ switch ${_hop_idot} t teleport ${_hop_idot} r rename ${_hop_idot} q quit "
+    (( _hop_utf )) || keys=" up/dn jk move . Enter switch . t teleport . r rename . q quit "
     [[ -n $_hop_msg ]] && keys=" ${_hop_msg} "
     print -r -- "${F}${_hop_v}${R}${D}${(r:inner:)${keys[1,inner]}}${R}${F}${_hop_v}${R}${K}"
     print -r -- "${F}${_hop_bl}${(pl:$(( W - 2 ))::$_hop_hh:):-}${_hop_br}${R}${K}"
@@ -245,6 +307,9 @@ _hop_menu() {
     local -i sel=1 off=0 n=${#_hop_pids}
     local k k2 k3
     _hop_msg='' _hop_result=''
+    # terminals running code from before hop existed register only after a
+    # restart / re-source — worth saying when the list looks lonely
+    (( n == 1 )) && _hop_msg="only this shell — others join after: source ~/.zshrc"
     print -rn -- $'\e[?1049h\e[?25l\e[2J'
     {
         while :; do
@@ -269,6 +334,7 @@ _hop_menu() {
                 [1-9]) local -i jmp=$k
                     (( jmp <= n )) && { sel=jmp; _hop_switch ${_hop_pids[sel]} && break } ;;
                 $'\r'|$'\n') _hop_switch ${_hop_pids[sel]} && break ;;
+                t|T) _hop_teleport ${_hop_pids[sel]} && break ;;
                 r|R) _hop_rename ${_hop_pids[sel]} ;;
                 q|Q) break ;;
             esac
@@ -299,11 +365,13 @@ hop() {
         help|-h|--help)
             print -r -- 'hop — jump between your terminals
   hop              open the panel: ↑↓/jk move, 1-9 jump, ⏎ switch,
-                   r rename (sets the tab/window title too), q quit
+                   t teleport (cd to its dir), r rename (sets the tab
+                   title too), q quit. ⤫ marks unreachable terminals.
   hop name <label> name this terminal
   hop list         plain listing (for scripts)
-Switching: tmux pane → true switch; macOS/X11 → focus window by title;
-otherwise teleports your current shell to the target'\''s directory.' ;;
+Switching: tmux pane → true switch; macOS/X11/Windows-Terminal windows →
+focus by title (name your terminals!). When nothing can reach the target,
+Enter explains instead of guessing; t explicitly brings its cwd here.' ;;
         *) print -u2 "hop: unknown command '$1' (try: hop help)"; return 1 ;;
     esac
 }

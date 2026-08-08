@@ -30,10 +30,44 @@ re-run). Restart the shell, or `source ~/.zshrc`.
 prompt-theme            # list themes, mark the current one
 prompt-theme gallery    # preview every theme in color
 prompt-theme peacock    # switch now, remembered next time
+theme                   # 🎨 panel: browse themes w/ full preview + effects
 prompt-theme random     # surprise me
 prompt-theme glow       # ✨ toggle glow: bold prompt & file colors
 hop                     # 🐇 panel: list / preview / rename / jump terminals
 ```
+
+### `theme` — the picker panel
+
+`theme` opens a full-screen panel in the hop family. As you browse with
+`↑↓`/`jk` (or `1-9`), the whole panel re-chromes itself in the highlighted
+theme's colors and the preview re-renders **every themed element**: the
+two-line prompt sample (path, git branch, dirty `●`, arrows) and the file
+palette — folder, plain file, symlink, executable, pipe, archive, image,
+broken link. `✓` marks the active theme.
+
+```
+╔═ themes ─ 8/14 ═════════════════════════════════
+║    7   gruvbox    📼 retro groove: warm earth tones
+║ ▸  8   matrix     💊 digital rain, phosphor green
+╟─ preview ───────────────────────────────────────
+║  「~/zion」 on main ●
+║  λ
+║  folder/  file  link@  bin*  pipe|  pack.tar  img.png  gone@
+╟─ effects ───────────────────────────────────────
+║  [g] glow: off   [p] full paths: on
+║  ↑↓/jk browse · 1-9 jump · ⏎ apply · g/p effects · q quit
+╚═════════════════════════════════════════════════
+```
+
+`⏎` applies + persists the highlighted theme; `q`/`Esc` keeps yours.
+Effects toggle live from the panel and stick either way:
+
+- `g` — ✨ glow: embolden the prompt and all file colors (persisted to `glow`)
+- `p` — full paths: `%~` → `%d` in prompts (persisted to `fullpaths`,
+  which overrides the `PROMPT_FULL_PATHS` env default)
+
+Anything else falls through to `prompt-theme`: `theme matrix`,
+`theme gallery`, `theme random` all work.
 
 Your choice is saved to `current` (and glow to `glow`) in the install
 directory.
@@ -74,8 +108,11 @@ hop help         # cheat sheet
 ```
 
 **Keys:** `↑↓` or `j/k` move (the preview follows) · `1-9` jump straight to a
-row · `⏎` switch · `r` rename the selected terminal · `q`/`Esc` quit.
-`●` marks a terminal where a command is running right now, `·` one at rest.
+row · `⏎` switch · `t` teleport (cd this shell to the target's directory) ·
+`r` rename the selected terminal · `q`/`Esc` quit.
+`●` marks a terminal where a command is running right now, `·` one at rest,
+`⤫` one that no switch backend can reach from here (the preview's `jump:`
+line says exactly what `⏎` would do, before you press it).
 The panel is drawn in your active theme's colors — matrix gets a green panel,
 crt an amber one. Box-drawing falls back to pure ASCII automatically in
 non-UTF-8 locales (or force it with `HOP_ASCII=1`).
@@ -87,14 +124,20 @@ find windows by exactly those titles. Renaming another session takes effect
 at its next prompt. Names survive `cd`s and long-running commands; they die
 with the shell.
 
-**What Enter actually does** — best available backend, probed in order:
+**What Enter actually does** — hop works out each terminal's reachability up
+front and never guesses:
 
 | # | environment | result |
 |---|-------------|--------|
 | 1 | both shells inside the same tmux server | true switch to that session/window/pane |
 | 2 | macOS (Terminal.app or iTerm2) | focuses the window/tab by title, via `osascript` |
-| 3 | Linux X11 with `wmctrl` or `xdotool` installed | focuses the window by title |
-| 4 | everywhere else | **teleport**: your current shell `cd`s to the target's directory |
+| 3 | WSL with `powershell.exe` reachable | raises the Windows Terminal **window** whose front tab carries the name |
+| 4 | Linux X11 with `wmctrl` or `xdotool` installed | focuses the window by title |
+| 5 | nothing can reach it (`⤫` in the list) | `⏎` tells you why and stays — no surprise side effects |
+
+Teleport — `cd`ing *this* shell to the target's directory — never happens on
+its own; it's the explicit `t` key, and it brings only the cwd (not the other
+terminal's theme, history, or whatever is running there).
 
 Honesty corner: no OS offers a portable "focus that other terminal window"
 primitive, which is why the ladder exists. The live screen preview inside the
@@ -135,13 +178,15 @@ Works out of the box — `osascript` ships with the OS.
 Run zsh inside **WSL2** (Ubuntu etc.) with **Windows Terminal**:
 
 - The panel, naming, previews and teleport all work as on Linux.
-- Windows window focus can't be scripted portably from inside WSL, so hop
-  won't move you between Windows Terminal tabs itself — but your `hop
-  name`s land in each tab's title (at that shell's next prompt), so the tabs
-  are labelled: pick with `Ctrl+Tab`, the tab dropdown, or the command
-  palette's "focus tab".
-- For true in-place switching, run tmux inside WSL — hop then switches panes
-  for real, and you keep one Windows Terminal tab total.
+- **Separate WT windows: switchable.** Name your terminals (`hop name api`)
+  and hop raises the right Windows Terminal window by its title (via
+  `powershell.exe` AppActivate — first call takes a second to spin up).
+- **Tabs inside one window: not reachable from WSL** — no API exposes them.
+  Those rows show `⤫`; your `hop name`s still land in each tab's title, so
+  pick with `Ctrl+Tab`, the tab dropdown, or the command palette. `⏎` on
+  such a row explains this instead of doing something you didn't ask for.
+- For true in-place tab switching, run tmux inside WSL — hop then switches
+  panes for real, and you keep one Windows Terminal tab total.
 - Git-Bash/Cygwin zsh: untested; the registry and teleport are plain POSIX
   files + escapes and should behave like the SSH case.
 

@@ -1,6 +1,7 @@
 # ~/.prompt/init.zsh — a tiny, dependency-free, themeable zsh prompt engine.
 # No frameworks, no plugins. Just zsh builtins + small theme scripts.
 #
+#   Theme panel:    theme               — browse w/ preview, toggle effects
 #   Switch theme:   prompt-theme <name>
 #   List / preview: prompt-theme        (or: prompt-theme gallery)
 #   Surprise me:    prompt-theme random
@@ -194,6 +195,9 @@ add-zsh-hook zshexit _prompt_farewell
 typeset -gA _prompt_lscolors
 typeset -gi _prompt_glow=0
 [[ -f "$PROMPT_HOME/glow" ]] && _prompt_glow=$(<"$PROMPT_HOME/glow")
+# full-path display (%~ → %d): the file, when present, overrides the
+# PROMPT_FULL_PATHS env default — the `theme` panel toggles it with `p`.
+[[ -f "$PROMPT_HOME/fullpaths" ]] && PROMPT_FULL_PATHS=$(<"$PROMPT_HOME/fullpaths")
 
 _pr_ls_register() {
     local n=$1 di=$2 ln=$3 ex=$4 sp=$5 br=$6 ar=$7 me=$8 e
@@ -207,17 +211,20 @@ _pr_ls_register() {
     _prompt_lscolors[$n]=$L
 }
 
+_pr_ls_glowed() {   # print an LS_COLORS string with every entry emboldened
+    local pair v out=''
+    for pair in ${(s.:.)1}; do
+        v=${pair#*=}
+        [[ $pair == rs=* || $v == '1;'* ]] || v="1;${v}"
+        out+="${pair%%=*}=${v}:"
+    done
+    print -rn -- "${out%:}"
+}
+
 _prompt_apply_lscolors() {
-    local ls=${_prompt_lscolors[$1]} pair v out=''
+    local ls=${_prompt_lscolors[$1]}
     [[ -n $ls ]] || return 0
-    if (( _prompt_glow )); then                      # glow: embolden every entry
-        for pair in ${(s.:.)ls}; do
-            v=${pair#*=}
-            [[ $pair == rs=* || $v == '1;'* ]] || v="1;${v}"
-            out+="${pair%%=*}=${v}:"
-        done
-        ls=${out%:}
-    fi
+    (( _prompt_glow )) && ls=$(_pr_ls_glowed "$ls")
     export LS_COLORS=$ls
     zstyle ':completion:*' list-colors ${(s.:.)ls}
 }
@@ -250,9 +257,10 @@ _pr_ls_swatch() {   # one-line file-color preview, used by the gallery
 # prepending their own "(venv)" to the prompt.
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
-# ── session registry + hop, the terminal switcher panel ─────────────────────
+# ── session registry + hop (terminal switcher) + theme picker panel ─────────
 [[ -r "$PROMPT_HOME/sessions.zsh" ]] && source "$PROMPT_HOME/sessions.zsh"
 [[ -r "$PROMPT_HOME/hop.zsh"      ]] && source "$PROMPT_HOME/hop.zsh"
+[[ -r "$PROMPT_HOME/menu.zsh"     ]] && source "$PROMPT_HOME/menu.zsh"
 
 # ── colorful ASCII-art startup banner ───────────────────────────────────────
 [[ -r "$PROMPT_HOME/banner.zsh" ]] && source "$PROMPT_HOME/banner.zsh"

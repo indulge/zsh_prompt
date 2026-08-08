@@ -1,5 +1,6 @@
 # the per-machine selected theme + glow setting are user state, not the repo's
 current
 glow
+fullpaths
 # live session registry written by sessions.zsh, one file per running shell
 sessions/
