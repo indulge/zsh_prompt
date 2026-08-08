@@ -12,13 +12,13 @@ in Devanagari with Hindi and English meanings.
 One command, anywhere:
 
 ```sh
-git clone https://github.com/indulge/zsh_prompt.git ~/.prompt && ~/.prompt/install.sh
+git clone https://github.com/indulge/zsh-prompt.git ~/.prompt && ~/.prompt/install.sh
 ```
 
 Or install into any path and start on a chosen theme:
 
 ```sh
-git clone https://github.com/indulge/zsh_prompt.git ~/dotfiles/prompt && ~/dotfiles/prompt/install.sh peacock
+git clone https://github.com/indulge/zsh-prompt.git ~/dotfiles/prompt && ~/dotfiles/prompt/install.sh peacock
 ```
 
 The installer adds one managed block to your `~/.zshrc` (idempotent — safe to

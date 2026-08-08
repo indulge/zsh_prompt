@@ -2,7 +2,7 @@
 # prompt.sh installer — wires the prompt engine into your ~/.zshrc.
 # Idempotent: safe to run repeatedly. Works from any location.
 #
-#   git clone https://github.com/indulge/zsh_prompt.git ~/.prompt && ~/.prompt/install.sh
+#   git clone https://github.com/indulge/zsh-prompt.git ~/.prompt && ~/.prompt/install.sh
 #
 # Optional: pick a starting theme  ->  ~/.prompt/install.sh peacock
 
