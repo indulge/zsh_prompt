@@ -2,5 +2,5 @@
 current
 glow
 fullpaths
-# live session registry written by sessions.zsh, one file per running shell
+# hop-branch runtime state (running shells may write here on any branch)
 sessions/
