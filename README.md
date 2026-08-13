@@ -4,10 +4,11 @@ Tiny, playful, **dependency-free** zsh prompt themes. No Oh-My-Zsh, no Powerleve
 no plugins, no Nerd Fonts — just small zsh scripts you can read in a minute.
 
 You get a two-line prompt with git status, a command timer and a right-side
-clock — and then the parts that make it *playful*: every shell opens with a
-श्लोक (a verse from the Gita, Ramcharitmanas, Hanuman Chalisa… or Marcus
-Aurelius), the real moon lives in your prompt, and on festival days the
-terminal quietly celebrates with you.
+clock, in **seventeen themes** — peacock's royal blues to matrix's digital
+rain to diwali's lamp-gold — and then the parts that make it *playful*: every
+shell opens with a श्लोक (a verse from the Gita, Ramcharitmanas, Hanuman
+Chalisa… or Marcus Aurelius), the real moon lives in your prompt, and on
+festival days the terminal quietly celebrates with you.
 
 ![every shell opens with a verse](docs/img/shlok-card.svg)
 
@@ -43,8 +44,37 @@ git segment, and file palette all render in the highlighted theme's colors.
 `⏎` applies, `q` keeps yours, `g`/`p` toggle glow and full paths, and **`f`
 opens the उत्सव browser** (below). Tab-completion knows every name.
 
-Themes color more than the prompt: `ls`, `tree`, `fd` and tab-completion
-listings follow along, because each theme ships a matching `LS_COLORS` palette.
+## Themes
+
+![all seventeen themes, in their own colors](docs/img/theme-gallery.svg)
+
+Each theme colors more than the prompt: `ls`, `tree`, `fd` and tab-completion
+listings follow along, because every theme ships a matching `LS_COLORS`
+palette — that's the file row under each prompt above.
+
+| name        | vibe |
+|-------------|------|
+| `peacock`   | 🦚 the flagship — royal blue, emerald & gold; coral only for failure |
+| `candy`     | 🍭 bubblegum pinks & mint |
+| `bubblegum` | 🫧 soft pastel candy floss |
+| `synthwave` | 🌆 80s neon magenta & cyan |
+| `galaxy`    | 🌌 cosmic violets & starlight |
+| `ocean`     | 🌊 deep blues, teal & aqua |
+| `forest`    | 🌲 mossy greens & lime |
+| `sunset`    | 🌅 warm orange, coral & dusk |
+| `rainbow`   | 🌈 full-spectrum, gradient arrows |
+| `matrix`    | 💊 digital rain — phosphor greens, λ prompt |
+| `dracula`   | 🧛 the editor classic: purple, pink & cyan |
+| `gruvbox`   | 📼 retro groove — warm earth tones |
+| `nord`      | 🧊 arctic frost blues & aurora accents |
+| `crt`       | 🖥️ amber phosphor terminal, ▮ block cursor |
+| `diwali`    | 🪔 उत्सव · lamp-gold on the darkest night |
+| `holi`      | 🎨 उत्सव · a handful of every color |
+| `navratri`  | 🌺 उत्सव · nine nights, nine colors |
+
+`peacock` also shows: user@host over SSH, active venv/conda 🐍, background
+jobs ✦, the moon 🌔, and iridescent ❯❯❯ arrows that shift one hue along the
+feather with every command.
 
 ## उत्सव — the terminal celebrates the calendar
 
@@ -136,32 +166,6 @@ rotation automatically.
 - ●·● **Feather of fortune** (peacock theme): the last 8 exit codes as tiny
   dots, visible only when something recently failed.
 - 🙏 **Farewell:** leaving the shell prints धन्यवाद with your session stats.
-
-## Themes
-
-| name        | vibe |
-|-------------|------|
-| `peacock`   | 🦚 the flagship — royal blue, emerald & gold; coral only for failure |
-| `candy`     | 🍭 bubblegum pinks & mint |
-| `bubblegum` | 🫧 soft pastel candy floss |
-| `synthwave` | 🌆 80s neon magenta & cyan |
-| `galaxy`    | 🌌 cosmic violets & starlight |
-| `ocean`     | 🌊 deep blues, teal & aqua |
-| `forest`    | 🌲 mossy greens & lime |
-| `sunset`    | 🌅 warm orange, coral & dusk |
-| `rainbow`   | 🌈 full-spectrum, gradient arrows |
-| `matrix`    | 💊 digital rain — phosphor greens, λ prompt |
-| `dracula`   | 🧛 the editor classic: purple, pink & cyan |
-| `gruvbox`   | 📼 retro groove — warm earth tones |
-| `nord`      | 🧊 arctic frost blues & aurora accents |
-| `crt`       | 🖥️ amber phosphor terminal, ▮ block cursor |
-| `diwali`    | 🪔 उत्सव · lamp-gold on the darkest night |
-| `holi`      | 🎨 उत्सव · a handful of every color |
-| `navratri`  | 🌺 उत्सव · nine nights, nine colors |
-
-`peacock` also shows: user@host over SSH, active venv/conda 🐍, background
-jobs ✦, the moon 🌔, and iridescent ❯❯❯ arrows that shift one hue along the
-feather with every command.
 
 ## Knobs
 
