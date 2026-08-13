@@ -76,8 +76,8 @@ _thm_draw() {   # uses: sel off n _thm_names _thm_msg (dynamic scope)
     (( _prompt_glow ))      && g="${H}on ✨${R}"
     (( PROMPT_FULL_PATHS )) && p="${H}on${R}"
     print -r -- "${F}${_thm_v}${R}  [g] glow: ${g}   [p] full paths: ${p}${K}"
-    local keys="↑↓/jk browse ${_thm_dot} 1-9 jump ${_thm_dot} ⏎ apply ${_thm_dot} g/p effects ${_thm_dot} q quit"
-    (( _thm_utf )) || keys="up/dn jk browse . 1-9 jump . Enter apply . g/p effects . q quit"
+    local keys="↑↓/jk browse ${_thm_dot} 1-9 jump ${_thm_dot} ⏎ apply ${_thm_dot} g/p effects ${_thm_dot} f उत्सव ${_thm_dot} q quit"
+    (( _thm_utf )) || keys="up/dn jk browse . 1-9 jump . Enter apply . g/p effects . f utsav . q quit"
     [[ -n $_thm_msg ]] && keys=$_thm_msg
     print -r -- "${F}${_thm_v}${R}  ${D}${keys}${R}${K}"
     print -r -- "${F}${_thm_bl}${(pl:$(( W - 1 ))::$_thm_hh:):-}${R}${K}"
@@ -86,7 +86,15 @@ _thm_draw() {   # uses: sel off n _thm_names _thm_msg (dynamic scope)
 
 _thm_menu() {
     local -a _thm_names=(${(ok)_prompt_themes})
-    local -i n=${#_thm_names} sel=1 off=0 applied=0 efx=0
+    # उत्सव themes are occasion-wear, not defaults — group them at the tail
+    if (( ${+_utsav} )); then
+        local -a _thm_reg=() _thm_fest=() ; local _t
+        for _t in $_thm_names; do
+            [[ -n ${_utsav[$_t:name]:-} ]] && _thm_fest+=($_t) || _thm_reg+=($_t)
+        done
+        _thm_names=($_thm_reg $_thm_fest)
+    fi
+    local -i n=${#_thm_names} sel=1 off=0 applied=0 efx=0 fest=0
     local -i cur=${_thm_names[(Ie)$_prompt_current]}
     (( cur )) && sel=cur
     local _thm_msg='' junk
@@ -107,6 +115,8 @@ _thm_menu() {
                     (( _prompt_glow ^= 1 )) || :
                     print -r -- $_prompt_glow > "$PROMPT_HOME/glow" 2>/dev/null
                     efx=1 ;;
+                f|F)   # the उत्सव browser — opened after the alt screen restores
+                    (( $+functions[_utsav_panel] )) && { fest=1; break } ;;
                 p|P)
                     (( PROMPT_FULL_PATHS = ! PROMPT_FULL_PATHS )) || :
                     print -r -- ${PROMPT_FULL_PATHS:-0} > "$PROMPT_HOME/fullpaths" 2>/dev/null
@@ -119,8 +129,12 @@ _thm_menu() {
         print -rn -- $'\e[?25h\e[?1049l'
     }
     if (( applied )); then
+        # (a festival theme applied on its own day earns the moment — the
+        # theme() wrapper in utsav.zsh notices the switch and delivers it)
         _prompt_use "${_thm_names[sel]}"
         print -r -- "theme: ${_thm_names[sel]}${${(M)_prompt_glow:#1}:+ ✨}"
+    elif (( fest )); then
+        _utsav_panel                     # effects paint on the real screen, not the alt one
     elif (( efx )); then
         _prompt_use "$_prompt_current"   # land the effect toggles on the live prompt
         print -r -- "theme: kept ${_prompt_current}, effects updated"

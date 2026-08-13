@@ -165,13 +165,31 @@ typeset -gi _pr_cmds=0
 _prompt_count_cmd() { (( ++_pr_cmds )); _pr_ran=1 }
 add-zsh-hook preexec _prompt_count_cmd
 
+# ── एक वाणी: the single-voice arbiter ───────────────────────────────────────
+# Hooks that want one line above the prompt offer it via _pr_say with a
+# priority (lower = rarer = wins); _pr_speak — registered last, at the end of
+# this file — prints at most ONE per render. Losers are dropped, not queued:
+# deferred delight reads as a bug. Without this, a 108th command that also
+# failed after 10s would stack माला and karma lines over one prompt.
+typeset -ga _pr_voice
+typeset -gi _pr_spoke=0
+_pr_say() {   # <priority> <prompt-escaped line>
+    (( ${#_pr_voice} == 0 || $1 < _pr_voice[1] )) && _pr_voice=($1 "$2")
+    return 0
+}
+_pr_speak() {
+    _pr_spoke=0
+    (( ${#_pr_voice} )) && { print -P -- "${_pr_voice[2]}"; _pr_spoke=1 }
+    _pr_voice=()
+}
+
 # Every 108 commands: one mala of the keyboard. 📿
 typeset -gi _pr_mala=0
 _prompt_mala() {
     (( _pr_cmds && _pr_cmds % 108 == 0 && _pr_cmds != _pr_mala )) || return 0
     _pr_mala=$_pr_cmds
     local -i n=$(( _pr_cmds / 108 ))
-    print -P "  %F{220}📿 एक माला पूर्ण${${n:#1}:+ ×$n}%f %F{243}· ${_pr_cmds} commands this session 🙏%f"
+    _pr_say 20 "  %F{220}📿 एक माला पूर्ण${${n:#1}:+ ×$n}%f %F{243}· ${_pr_cmds} commands this session 🙏%f"
 }
 add-zsh-hook precmd _prompt_mala
 
@@ -183,7 +201,10 @@ _prompt_farewell() {
     if   (( s >= 3600 )); then dur="$((s/3600))h $((s%3600/60))m"
     elif (( s >= 60 ));   then dur="$((s/60))m $((s%60))s"
     else                       dur="${s}s"; fi
-    print -P "\n  %F{213}🙏 धन्यवाद%f %F{243}·%f %F{80}${_pr_cmds} commands%f %F{243}·%f %F{80}${dur}%f %F{243}·%f %F{219}फिर मिलेंगे ✨%f"
+    local life=''
+    (( ${PROMPT_SADHANA:-1} )) && typeset -f _dl_total >/dev/null \
+        && life=" %F{243}·%f %F{80}$(_dl_total) आजीवन%f"
+    print -P "\n  %F{213}🙏 धन्यवाद%f %F{243}·%f %F{80}${_pr_cmds} commands%f %F{243}·%f %F{80}${dur}%f${life} %F{243}·%f %F{219}फिर मिलेंगे ✨%f"
 }
 add-zsh-hook zshexit _prompt_farewell
 
@@ -289,12 +310,25 @@ _pr_readkey() {   # [first-read timeout, seconds]
 : ${PROMPT_BANNER:=1}
 (( PROMPT_BANNER )) && typeset -f prompt-banner >/dev/null && prompt-banner
 
+# ── उत्सव — festival modes ──────────────────────────────────────────────────
+# On a festival day (festivals.txt, verified dates): a banner in every shell,
+# and the animated moment once — first shell of the day only. Any day:
+# `theme utsav` browses every festival's moment, Alt-J replays one.
+# PROMPT_UTSAV=0 silences it all. The theme wrapper installs at file end,
+# once theme() exists.
+[[ -r "$PROMPT_HOME/utsav.zsh" ]] && source "$PROMPT_HOME/utsav.zsh"
+typeset -f _utsav_startup >/dev/null && _utsav_startup
+
 # ── श्लोक — offline verses: Gita, Ramayan, Sundarkand, Chalisa ───────────────
 # A random verse at startup (PROMPT_SHLOK=0 to disable), `shlok` or Alt-G for
 # a fresh one any time.
 [[ -r "$PROMPT_HOME/shlok.zsh" ]] && source "$PROMPT_HOME/shlok.zsh"
 : ${PROMPT_SHLOK:=1}
 (( PROMPT_SHLOK )) && [[ -t 1 ]] && typeset -f shlok >/dev/null && shlok 2>/dev/null
+
+# ── the ordinary-day delights: empathy · whisper · साधना · cd-greet ─────────
+# (sourced after shlok — whisper borrows verse lines from the collections)
+[[ -r "$PROMPT_HOME/delights.zsh" ]] && source "$PROMPT_HOME/delights.zsh"
 
 # ── theme switching ─────────────────────────────────────────────────────────
 # Apply full path expansion if PROMPT_FULL_PATHS is set
@@ -391,3 +425,32 @@ _prompt_follow() {
     _prompt_current=$t
 }
 add-zsh-hook precmd _prompt_follow
+
+# ── closing wiring (order matters) ──────────────────────────────────────────
+# theme() exists now — install the उत्सव wrapper (`theme utsav`, day-jewel on
+# festival-theme switches). Then the single voice speaks after every hook has
+# offered its line, and ambience registers last so it can see whether it did.
+#
+# The speaker RE-ANCHORS to the end of the chain on every source: add-zsh-hook
+# dedupes but never moves, so a `source ~/.zshrc` that registers new offering
+# hooks would otherwise land them AFTER the speaker — and every delight line
+# would arrive one prompt late.
+typeset -f _utsav_arm >/dev/null && _utsav_arm
+add-zsh-hook -d precmd _pr_speak        2>/dev/null
+add-zsh-hook -d precmd _utsav_amb_hook  2>/dev/null
+add-zsh-hook precmd _pr_speak
+typeset -f _utsav_arm_ambient >/dev/null && _utsav_arm_ambient
+
+# Late-loading plugins (vi-mode and friends) rebuild keymaps and silently wipe
+# widget bindings. Re-assert our two chords at the FIRST prompt — after the
+# whole ~/.zshrc, plugins included, has finished loading.
+_pr_rebind_once() {
+    add-zsh-hook -d precmd _pr_rebind_once
+    [[ -o zle ]] || return 0
+    if (( $+functions[_shlok_widget] )); then
+        zle -N shlok-random _shlok_widget
+        bindkey '\eg' shlok-random
+    fi
+    (( $+functions[_utsav_bind_key] )) && _utsav_bind_key
+}
+add-zsh-hook precmd _pr_rebind_once

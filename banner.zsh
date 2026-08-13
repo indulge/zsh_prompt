@@ -29,7 +29,10 @@ prompt-banner() {
     elif (( h >= 17 && h < 21 )); then greet='शुभ संध्या' icon='🌆'
     else                               greet='शुभ रात्रि'  icon='🌙'; fi
     _pr_moon
-    print -P "  ${icon} %F{219}${greet}, %F{213}%n%f%F{243}!%f  %F{242}%D{%a %d %b · %H:%M}%f  ${_pr_moon_icon} %F{111}${_pr_moon_name}%f"
+    # the greeting knows your साधना title from level 2 on (delights.zsh)
+    local who=''
+    typeset -f _dl_titlestr >/dev/null && who=$(_dl_titlestr)
+    print -P "  ${icon} %F{219}${greet}, %F{213}%n${who}%f%F{243}!%f  %F{242}%D{%a %d %b · %H:%M}%f  ${_pr_moon_icon} %F{111}${_pr_moon_name}%f"
 
     # System info — distro, shell, where you are (os-release parsed in pure zsh).
     local distro='' ver='' line

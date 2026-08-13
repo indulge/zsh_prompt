@@ -69,6 +69,11 @@ _shlok_pick() {
 _shlok_show() {
     local id=$1 coll=${1%%:*} line
     local ramp=${_shlok_ramp[$coll]:-"$_pr_ramp"}
+    # on the true full moon, every card rises in moonlight silver
+    if (( $+functions[_pr_moon] )); then
+        _pr_moon
+        [[ $_pr_moon_name == पूर्णिमा ]] && ramp='255 253 251 249 251 253'
+    fi
     local -i off=$(( RANDOM % 8 ))
     print
     for line in "${(@f)${_shlok_art[$coll]%$'\n'}}"; do
@@ -164,6 +169,9 @@ _shlok_karma() {
     (( ${PROMPT_KARMA:-1} ))                    || return 0
     (( _pr_last != 0 && _pr_elapsed_s >= 10 ))  || return 0
     _shlok_karma_i=$(( _shlok_karma_i % ${#_shlok_karma_lines} + 1 ))
-    print -P "  %F{243}🪶 ${_shlok_karma_lines[_shlok_karma_i]}%f"
+    local line="  %F{243}🪶 ${_shlok_karma_lines[_shlok_karma_i]}%f"
+    # offer to the single-voice arbiter when the engine provides one (a माला
+    # outranks a consolation); speak directly when sourced standalone
+    if (( $+functions[_pr_say] )); then _pr_say 30 "$line"; else print -P "$line"; fi
 }
 add-zsh-hook precmd _shlok_karma 2>/dev/null
