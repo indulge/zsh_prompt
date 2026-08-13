@@ -1,0 +1,124 @@
+# quotes/meditations.txt — Meditations — मार्कस औरेलियस (offline, UTF-8)
+# English text: George Long's 1862 translation, public domain (via the
+# Standard Ebooks edition, CC0). Hindi rendering: in-house, refereed.
+@title Meditations · मार्कस औरेलियस
+@icon 🏛️
+@ramp 97 103 139 146 183 189 187 179
+@art ▄▀█ █░█ █▀█ █▀▀ █░░ █ █░█ █▀
+@art █▀█ █▄█ █▀▄ ██▄ █▄▄ █ █▄█ ▄█
+
+[2.1]
+t: Book II · 1
+v: Begin the morning by saying to thyself, I shall meet with the
+v: busybody, the ungrateful, arrogant, deceitful, envious, unsocial.
+v: All these things happen to them by reason of their ignorance of
+v: what is good and evil… We are made for cooperation, like feet,
+v: like hands, like eyelids.
+hi: भोर होते ही स्वयं से कहो — आज मुझे हस्तक्षेपी, कृतघ्न, उद्धत,
+hi: कपटी, ईर्ष्यालु और रूखे लोग मिलेंगे। वे ऐसे इसलिए हैं क्योंकि वे
+hi: शुभ-अशुभ को नहीं पहचानते… पर हम सहयोग के लिए बने हैं — जैसे दो
+hi: पाँव, दो हाथ, दो पलकें।
+
+[2.14]
+t: Book II · 14
+v: Though thou shouldst be going to live three thousand years…
+v: remember that no man loses any other life than this which he
+v: now lives… For a man cannot lose either the past or the future:
+v: for what a man has not, how can anyone take this from him?
+hi: चाहे तुम तीन हज़ार वर्ष जियो, स्मरण रखो — कोई भी उस जीवन के
+hi: सिवा कुछ नहीं खोता जो वह अभी जी रहा है। बीता हुआ और आने वाला —
+hi: जो तुम्हारे पास है ही नहीं, उसे कोई तुमसे कैसे छीनेगा?
+
+[2.17]
+t: Book II · 17
+v: Of human life the time is a point, and the substance is in a
+v: flux… life is a warfare and a stranger's sojourn, and after-fame
+v: is oblivion. What then is that which is able to conduct a man?
+v: One thing and only one, philosophy.
+hi: मानव-जीवन का काल एक बिंदु है, उसका द्रव्य बहती धारा… जीवन एक
+hi: संग्राम है, परदेस का पड़ाव है, और मरणोपरांत कीर्ति — विस्मृति।
+hi: तो फिर मनुष्य को पार कौन लगाए? एक — केवल एक — दर्शन।
+
+[4.3]
+t: Book IV · 3
+v: Men seek retreats for themselves, houses in the country,
+v: seashores, and mountains… but it is in thy power whenever thou
+v: shalt choose to retire into thyself. For nowhere either with
+v: more quiet or more freedom from trouble does a man retire than
+v: into his own soul.
+hi: लोग एकांत खोजते हैं — गाँव के घर, समुद्र-तट, पर्वत। पर जब चाहो,
+hi: अपने ही भीतर लौट जाना तुम्हारे वश में है। अपनी आत्मा से अधिक
+hi: शांत, अधिक निरुपद्रव आश्रय मनुष्य को और कहीं नहीं मिलता।
+
+[4.17]
+t: Book IV · 17
+v: Do not act as if thou wert going to live ten thousand years.
+v: Death hangs over thee. While thou livest, while it is in thy
+v: power, be good.
+hi: ऐसे मत जियो जैसे दस हज़ार वर्ष जीने वाले हो। मृत्यु सिर पर खड़ी
+hi: है। जब तक जीते हो, जब तक वश में है — भले बनो।
+
+[4.43]
+t: Book IV · 43
+v: Time is like a river made up of the events which happen, and a
+v: violent stream; for as soon as a thing has been seen, it is
+v: carried away, and another comes in its place, and this will be
+v: carried away too.
+hi: समय घटनाओं की नदी है, एक प्रबल धारा — कोई वस्तु दिखी नहीं कि बह
+hi: गई; दूसरी उसकी जगह आती है, और वह भी बह जाएगी।
+
+[5.1]
+t: Book V · 1
+v: In the morning when thou risest unwillingly, let this thought be
+v: present — I am rising to the work of a human being… Dost thou
+v: not see the little plants, the little birds, the ants, the
+v: spiders, the bees working together to put in order their several
+v: parts of the universe?
+hi: भोर में जब उठने का मन न हो, यह विचार साथ रखो — मैं मनुष्य के काम
+hi: के लिए उठ रहा हूँ। देखो — छोटे पौधे, चिड़ियाँ, चींटियाँ,
+hi: मकड़ियाँ, मधुमक्खियाँ — सब अपने-अपने हिस्से का ब्रह्मांड सँवार
+hi: रहे हैं।
+
+[5.16]
+t: Book V · 16
+v: Such as are thy habitual thoughts, such also will be the
+v: character of thy mind; for the soul is dyed by the thoughts.
+hi: जैसे तुम्हारे नित्य विचार, वैसा ही तुम्हारा मन — आत्मा विचारों
+hi: के रंग में रँग जाती है।
+
+[6.6]
+t: Book VI · 6
+v: The best way of avenging thyself is not to become like the
+v: wrong doer.
+hi: सबसे अच्छा प्रतिशोध — वैसा न बनना जैसा अन्याय करने वाला है।
+
+[7.8]
+t: Book VII · 8
+v: Let not future things disturb thee, for thou wilt come to them,
+v: if it shall be necessary, having with thee the same reason which
+v: now thou usest for present things.
+hi: भविष्य की चिंता मत करो। यदि आना होगा, तो तुम वहाँ भी वही विवेक
+hi: लेकर पहुँचोगे जो आज तुम्हारे साथ है।
+
+[7.59]
+t: Book VII · 59
+v: Look within. Within is the fountain of good, and it will ever
+v: bubble up, if thou wilt ever dig.
+hi: भीतर देखो। भीतर ही कल्याण का स्रोत है — खोदते रहो, वह सदा फूटता
+hi: रहेगा।
+
+[8.36]
+t: Book VIII · 36
+v: Do not disturb thyself by thinking of the whole of thy life…
+v: remember that neither the future nor the past pains thee, but
+v: only the present. But this is reduced to a very little, if thou
+v: only circumscribest it.
+hi: पूरे जीवन को एक साथ सोचकर व्याकुल मत हो। न भविष्य तुम्हें पीड़ा
+hi: देता है, न अतीत — केवल वर्तमान। और उसे घेर लो, तो वह बहुत छोटा
+hi: है।
+
+[10.16]
+t: Book X · 16
+v: No longer talk at all about the kind of man that a good man
+v: ought to be, but be such.
+hi: अच्छा मनुष्य कैसा होना चाहिए — इसकी चर्चा अब बंद; वैसा हो जाओ।
