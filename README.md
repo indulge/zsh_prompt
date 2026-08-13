@@ -37,12 +37,14 @@ theme list              # every theme, current one marked
 theme gallery           # preview them all in color
 theme random            # surprise me
 theme glow on           # ✨ embolden the prompt & file colors
+theme nerd on           # icon marks for git/venv/jobs — needs a Nerd Font
 ```
 
 The bare `theme` panel re-chromes itself as you browse — the prompt sample,
 git segment, and file palette all render in the highlighted theme's colors.
-`⏎` applies, `q` keeps yours, `g`/`p` toggle glow and full paths, and **`f`
-opens the उत्सव browser** (below). Tab-completion knows every name.
+`⏎` applies, `q` keeps yours, `g`/`p`/`n` toggle glow, full paths and nerd
+icons, and **`f` opens the उत्सव browser** (below). Tab-completion knows
+every name.
 
 ## Themes
 
@@ -75,6 +77,17 @@ palette — that's the file row under each prompt above.
 `peacock` also shows: user@host over SSH, active venv/conda 🐍, background
 jobs ✦, the moon 🌔, and iridescent ❯❯❯ arrows that shift one hue along the
 feather with every command.
+
+### Nerd Font icons — strictly opt-in
+
+The default look needs nothing: plain Unicode, any 256-color terminal. But if
+your terminal already wears a patched font ([JetBrainsMono Nerd
+Font](https://www.nerdfonts.com/), say), `theme nerd on` swaps the standard
+marks — git branch, python venv, background jobs, errors, the timer — for
+icons, across all seventeen themes. Every other running shell follows along,
+and decorative marks (diwali's ✦ jewel, galaxy's ★) keep their character.
+
+![theme nerd — plain marks vs Nerd Font icons](docs/img/nerd-mode.png)
 
 ## उत्सव — the terminal celebrates the calendar
 
@@ -188,6 +201,7 @@ to on.
 | `PROMPT_SADHANA=0`       | no lifetime titles or totals |
 | `PROMPT_CD_GREET=0`      | no lines when returning to old repos |
 | `PROMPT_FULL_PATHS=1`    | show full paths (`%d`) instead of `%~` |
+| `PROMPT_NERD=1`          | start with Nerd Font icon marks (default off; `theme nerd` toggles and persists) |
 
 ## Make it yours
 

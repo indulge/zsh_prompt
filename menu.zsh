@@ -4,7 +4,8 @@
 # re-renders in the highlighted theme's colors: its two-line prompt sample
 # (path, git branch, dirty dot, arrows) and its file colors (folder, file,
 # symlink, executable, pipe, archive, image, broken link). Effects toggle
-# live: g = ✨ glow, p = full paths. ⏎ applies + persists, q keeps your theme.
+# live: g = ✨ glow, p = full paths, n = nerd icons. ⏎ applies + persists,
+# q keeps your theme.
 # Pure zsh + ANSI escapes; ASCII borders in non-UTF-8 locales (HOP_ASCII=1).
 
 [[ -o interactive ]] || return
@@ -66,18 +67,20 @@ _thm_draw() {   # uses: sel off n _thm_names _thm_msg (dynamic scope)
     print -r -- "${F}${_thm_ml}${_thm_h2} preview ${(pl:$(( W - 11 ))::$_thm_h2:):-}${R}${K}"
     local ln
     for ln in ${(f)_prompt_samples[$name]}; do
+        (( _prompt_nerd )) && ln=${ln//on \%F/${_pr_g[on]} %F}
         (( _prompt_glow )) && ln="%B${${ln//\%B/}//\%b/}%b"
         print -P -- "${F}${_thm_v}${R}  ${ln}${K}"
     done
     print -r -- "${F}${_thm_v}${R}$(_thm_swatch "$name")${K}"
 
     print -r -- "${F}${_thm_ml}${_thm_h2} effects ${(pl:$(( W - 11 ))::$_thm_h2:):-}${R}${K}"
-    local g=off p=off
+    local g=off p=off nd=off
     (( _prompt_glow ))      && g="${H}on ✨${R}"
     (( PROMPT_FULL_PATHS )) && p="${H}on${R}"
-    print -r -- "${F}${_thm_v}${R}  [g] glow: ${g}   [p] full paths: ${p}${K}"
-    local keys="↑↓/jk browse ${_thm_dot} 1-9 jump ${_thm_dot} ⏎ apply ${_thm_dot} g/p effects ${_thm_dot} f उत्सव ${_thm_dot} q quit"
-    (( _thm_utf )) || keys="up/dn jk browse . 1-9 jump . Enter apply . g/p effects . f utsav . q quit"
+    (( _prompt_nerd ))      && nd="${H}on ${_pr_g[on]}${R}"
+    print -r -- "${F}${_thm_v}${R}  [g] glow: ${g}   [p] full paths: ${p}   [n] nerd icons: ${nd}${K}"
+    local keys="↑↓/jk browse ${_thm_dot} 1-9 jump ${_thm_dot} ⏎ apply ${_thm_dot} g/p/n effects ${_thm_dot} f उत्सव ${_thm_dot} q quit"
+    (( _thm_utf )) || keys="up/dn jk browse . 1-9 jump . Enter apply . g/p/n effects . f utsav . q quit"
     [[ -n $_thm_msg ]] && keys=$_thm_msg
     print -r -- "${F}${_thm_v}${R}  ${D}${keys}${R}${K}"
     print -r -- "${F}${_thm_bl}${(pl:$(( W - 1 ))::$_thm_hh:):-}${R}${K}"
@@ -120,6 +123,11 @@ _thm_menu() {
                 p|P)
                     (( PROMPT_FULL_PATHS = ! PROMPT_FULL_PATHS )) || :
                     print -r -- ${PROMPT_FULL_PATHS:-0} > "$PROMPT_HOME/fullpaths" 2>/dev/null
+                    efx=1 ;;
+                n|N)
+                    (( _prompt_nerd ^= 1 )) || :
+                    print -r -- $_prompt_nerd > "$PROMPT_HOME/nerd" 2>/dev/null
+                    _pr_glyphs
                     efx=1 ;;
                 $'\r'|$'\n') applied=1; break ;;
                 q|Q) break ;;

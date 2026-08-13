@@ -1,6 +1,7 @@
-# the per-machine selected theme + glow setting are user state, not the repo's
+# the per-machine selected theme + glow/nerd settings are user state, not the repo's
 current
 glow
 fullpaths
+nerd
 # hop-branch runtime state (running shells may write here on any branch)
 sessions/

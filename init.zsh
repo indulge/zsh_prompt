@@ -46,12 +46,33 @@ _prompt_gitinfo() {
     _pr_stash=$(command git rev-list --walk-reflogs --count refs/stash 2>/dev/null) || _pr_stash=0
 }
 
+# ── glyph set: plain Unicode by default, Nerd Font icons opt-in ─────────────
+# `theme nerd on` (persisted in $PROMPT_HOME/nerd, PROMPT_NERD=1 presets it)
+# swaps the marks the shared helpers render. Codepoints stay in the ranges
+# stable across Nerd Fonts v2/v3: powerline E0Ax, devicons E7xx, FA F0xx.
+typeset -gA _pr_g
+typeset -gi _prompt_nerd=0
+_pr_glyphs() {
+    if (( _prompt_nerd )); then
+        _pr_g=(
+            on    $'\ue0a0'   # powerline branch, replaces the word "on"
+            venv  $'\ue73c'   # devicons python
+            jobs  $'\uf013'   # fa gear
+            err   $'\uf00d'   # fa times
+            timer $'\uf017'   # fa clock
+        )
+    else
+        _pr_g=( on 'on'  venv '🐍'  jobs '✦'  err '✘'  timer '⏱' )
+    fi
+}
+_pr_glyphs
+
 # Themes call this to render the git segment in their own accent colors:
 #   _pr_gitstr <color:on-word> <color:branch> [<color:alert>]
 _pr_gitstr() {
     [[ -n $_pr_branch ]] || return
     local con=$1 cbr=$2 cal=${3:-197}
-    print -n " %F{$con}on %F{$cbr}${_pr_branch//\%/%%}%f"
+    print -n " %F{$con}${_pr_g[on]} %F{$cbr}${_pr_branch//\%/%%}%f"
     [[ -n $_pr_dirty ]]  && print -n " %F{$cal}●%f"
     (( _pr_ahead ))      && print -n " %F{$cbr}⇡${_pr_ahead}%f"
     (( _pr_behind ))     && print -n " %F{$cal}⇣${_pr_behind}%f"
@@ -62,7 +83,7 @@ _pr_gitstr() {
 #   $(_pr_timestr <color>)   (empty unless the last command took a while)
 _pr_timestr() {
     [[ -n $_pr_elapsed ]] || return
-    print -n "%F{$1}⏱ ${_pr_elapsed}%f "
+    print -n "%F{$1}${_pr_g[timer]} ${_pr_elapsed}%f "
 }
 
 # ── extra segments (each renders nothing when idle) ──────────────────────────
@@ -71,7 +92,7 @@ _pr_timestr() {
 _pr_venvstr() {
     local v=${VIRTUAL_ENV:t}
     [[ -z $v && -n $CONDA_DEFAULT_ENV ]] && v=$CONDA_DEFAULT_ENV
-    [[ -n $v ]] && print -n " %F{$1}🐍 ${v//\%/%%}%f"
+    [[ -n $v ]] && print -n " %F{$1}${_pr_g[venv]} ${v//\%/%%}%f"
 }
 _pr_sshstr() {
     [[ -n $SSH_CONNECTION || -n $SSH_TTY ]] || return 0
@@ -216,6 +237,11 @@ add-zsh-hook zshexit _prompt_farewell
 typeset -gA _prompt_lscolors
 typeset -gi _prompt_glow=0
 [[ -f "$PROMPT_HOME/glow" ]] && _prompt_glow=$(<"$PROMPT_HOME/glow")
+# nerd icons: the file, when present, overrides the PROMPT_NERD env default —
+# the `theme` panel and `theme nerd` toggle it with `n`.
+(( ${+PROMPT_NERD} )) && _prompt_nerd=$PROMPT_NERD
+[[ -f "$PROMPT_HOME/nerd" ]] && _prompt_nerd=$(<"$PROMPT_HOME/nerd")
+_pr_glyphs
 # full-path display (%~ → %d): the file, when present, overrides the
 # PROMPT_FULL_PATHS env default — the `theme` panel toggles it with `p`.
 [[ -f "$PROMPT_HOME/fullpaths" ]] && PROMPT_FULL_PATHS=$(<"$PROMPT_HOME/fullpaths")
@@ -257,6 +283,15 @@ _prompt_glowify() {
     (( _prompt_glow )) || return 0
     PROMPT="%B${${PROMPT//\%B/}//\%b/}%b"
     RPROMPT="%B${${RPROMPT//\%B/}//\%b/}%b"
+}
+
+# nerd: swap the plain jobs/error marks baked into theme prompts for icons.
+# The patterns stay narrow (✦%j, ✘%?) so decorative marks — diwali's ✦ jewel,
+# rainbow's ✘✘✘ arrows, galaxy's ★ jobs star — keep their character.
+_prompt_nerdify() {
+    (( _prompt_nerd )) || return 0
+    PROMPT=${PROMPT//✦%j/${_pr_g[jobs]}%j}   RPROMPT=${RPROMPT//✦%j/${_pr_g[jobs]}%j}
+    PROMPT=${PROMPT//✘%\?/${_pr_g[err]}%?}   RPROMPT=${RPROMPT//✘%\?/${_pr_g[err]}%?}
 }
 
 _pr_ls_swatch() {   # one-line file-color preview, used by the gallery
@@ -346,6 +381,7 @@ _prompt_use() {
     fi
     _prompt_apply_$name
     _prompt_expand_paths
+    _prompt_nerdify
     _prompt_glowify
     _prompt_apply_lscolors $name
     _prompt_current=$name
@@ -360,15 +396,18 @@ _prompt_list() {
         print -P "  ${mark} %F{213}$(printf '%-11s' $name)%f ${_prompt_themes[$name]}"
     done
     local glow=''; (( _prompt_glow )) && glow='  %F{220}✨ glow on%f'
-    print -P "\n  %F{242}theme <name> | list | gallery | random | glow — no args opens the panel%f${glow}"
+    (( _prompt_nerd )) && glow+="  %F{117}${_pr_g[on]} nerd on%f"
+    print -P "\n  %F{242}theme <name> | list | gallery | random | glow | nerd — no args opens the panel%f${glow}"
 }
 
 _prompt_gallery() {
     print -P "\n%B%F{045}✦ playful-zsh theme gallery ✦%f%b\n"
-    local name
+    local name s
     for name in ${(ok)_prompt_themes}; do
         print -P "%F{242}── %f%B%F{213}${name}%f%b %F{242}${_prompt_themes[$name]}%f"
-        print -P "${_prompt_samples[$name]}"
+        s=${_prompt_samples[$name]}
+        (( _prompt_nerd )) && s=${s//on \%F/${_pr_g[on]} %F}
+        print -P "$s"
         _pr_ls_swatch $name
         print
     done
@@ -394,32 +433,48 @@ theme() {
             if (( _prompt_glow )); then print -P "%F{220}✨ glow on%f — bold prompt & file colors"
             else print -P "%F{242}glow off%f"; fi
             ;;
+        nerd)
+            case ${2:-toggle} in
+                on)  _prompt_nerd=1 ;;
+                off) _prompt_nerd=0 ;;
+                *)   (( _prompt_nerd ^= 1 )) || : ;;
+            esac
+            print -r -- $_prompt_nerd > "$PROMPT_HOME/nerd" 2>/dev/null
+            _pr_glyphs
+            _prompt_use "$_prompt_current"
+            if (( _prompt_nerd )); then print -P "%F{117}${_pr_g[on]} nerd icons on%f — needs a patched font (e.g. JetBrainsMono Nerd Font)"
+            else print -P "%F{242}nerd icons off%f — plain Unicode, works everywhere"; fi
+            ;;
         *)        _prompt_use "$1" ;;
     esac
 }
-compdef '_arguments "1:theme:(list gallery random glow ${(k)_prompt_themes})"' theme 2>/dev/null
+compdef '_arguments "1:theme:(list gallery random glow nerd ${(k)_prompt_themes})"' theme 2>/dev/null
 
 # ── activate saved theme (or default) ───────────────────────────────────────
 [[ -f "$PROMPT_HOME/current" ]] && _prompt_current=$(<"$PROMPT_HOME/current")
 [[ -n ${_prompt_themes[$_prompt_current]} ]] || _prompt_current=candy
 _prompt_apply_$_prompt_current
 _prompt_expand_paths
+_prompt_nerdify
 _prompt_glowify
 _prompt_apply_lscolors $_prompt_current
 
 # ── shells follow the persisted theme (PROMPT_FOLLOW=0 to opt out) ──────────
-# When any shell switches theme or glow, every other running shell adopts it
-# at its next prompt. Two builtin file reads per prompt, no forks.
+# When any shell switches theme, glow or nerd icons, every other running shell
+# adopts it at its next prompt. Three builtin file reads per prompt, no forks.
 _prompt_follow() {
     (( ${PROMPT_FOLLOW:-1} )) || return 0
-    local t=$_prompt_current g=0
+    local t=$_prompt_current g=0 nd=$_prompt_nerd
     [[ -r "$PROMPT_HOME/current" ]] && t=$(<"$PROMPT_HOME/current")
     [[ -f "$PROMPT_HOME/glow" ]] && g=$(<"$PROMPT_HOME/glow")
-    [[ $t == $_prompt_current && $g == $_prompt_glow ]] && return 0
+    [[ -f "$PROMPT_HOME/nerd" ]] && nd=$(<"$PROMPT_HOME/nerd")
+    [[ $t == $_prompt_current && $g == $_prompt_glow && $nd == $_prompt_nerd ]] && return 0
     [[ -n ${_prompt_themes[$t]} ]] || return 0
     _prompt_glow=$g
+    (( nd != _prompt_nerd )) && { _prompt_nerd=$nd; _pr_glyphs }
     _prompt_apply_$t
     _prompt_expand_paths
+    _prompt_nerdify
     _prompt_glowify
     _prompt_apply_lscolors $t
     _prompt_current=$t
