@@ -29,8 +29,17 @@
 
 # What this shell looked like before us — the unload function hands it back.
 # Guarded, so a re-source never snapshots our own prompt over the real one.
-(( $+_pr_pre_prompt )) || \
-    typeset -g _pr_pre_prompt=$PROMPT _pr_pre_rprompt=$RPROMPT _pr_pre_lscolors=$LS_COLORS
+# Set-ness is recorded separately from value: a user who exported LS_COLORS=''
+# should get an empty LS_COLORS back, not no LS_COLORS at all.
+if (( ! ${+_pr_pre_prompt} )); then
+    typeset -g  _pr_pre_prompt=$PROMPT       _pr_pre_rprompt=$RPROMPT
+    typeset -g  _pr_pre_lscolors=$LS_COLORS  _pr_pre_venv=$VIRTUAL_ENV_DISABLE_PROMPT
+    typeset -gi _pr_pre_lsset=${+LS_COLORS}  _pr_pre_venvset=${+VIRTUAL_ENV_DISABLE_PROMPT}
+    # The zstyles we are about to overwrite, captured as re-runnable zstyle
+    # calls. `-L ':vcs_info:*'` matches contexts, so it takes in :vcs_info:git:*
+    # too — and anything the user set under either.
+    typeset -g  _pr_pre_zstyles="$(zstyle -L ':vcs_info:*'; zstyle -L ':completion:*' list-colors)"
+fi
 
 source "${0:A:h}/init.zsh"
 
@@ -61,19 +70,21 @@ playful-zsh_plugin_unload() {
     zle -D shlok-random utsav-play 2>/dev/null
     unset "_comps[theme]" 2>/dev/null
 
-    # give the shell back its own prompt and file colors
+    # give the shell back its own prompt, file colors and environment
     PROMPT=$_pr_pre_prompt
     RPROMPT=$_pr_pre_rprompt
-    if [[ -n $_pr_pre_lscolors ]]; then
-        export LS_COLORS=$_pr_pre_lscolors
-        zstyle ':completion:*' list-colors ${(s.:.)_pr_pre_lscolors}
-    else
-        unset LS_COLORS
-        zstyle -d ':completion:*' list-colors
-    fi
-    zstyle -d ':vcs_info:*'
-    zstyle -d ':vcs_info:git:*'
-    unset VIRTUAL_ENV_DISABLE_PROMPT
+    if (( _pr_pre_lsset )); then export LS_COLORS=$_pr_pre_lscolors
+    else                         unset LS_COLORS; fi
+    if (( _pr_pre_venvset )); then export VIRTUAL_ENV_DISABLE_PROMPT=$_pr_pre_venv
+    else                           unset VIRTUAL_ENV_DISABLE_PROMPT; fi
+
+    # Only the styles we actually set: a blanket `zstyle -d ':vcs_info:*'` takes
+    # the user's own styles in that context down with ours. Then replay the
+    # snapshot, which puts back any of these they had set before we loaded.
+    zstyle -d ':vcs_info:*'     enable
+    zstyle -d ':vcs_info:git:*' check-for-changes formats actionformats
+    zstyle -d ':completion:*'   list-colors
+    [[ -n $_pr_pre_zstyles ]] && eval $_pr_pre_zstyles
 
     unset -m '_pr_*' '_prompt_*' '_thm_*' '_utsav*' '_uamb_*' '_ufx_*' '_shlok_*' '_dl_*'
     unset PROMPT_HOME
