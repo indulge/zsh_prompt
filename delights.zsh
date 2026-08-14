@@ -48,7 +48,7 @@ _dl_title() {   # -> index into _dl_titles for a given total
     print $s
 }
 _dl_save() {
-    print -r -- "$(_dl_total) $_dl_level $_dl_hints" > "$PROMPT_HOME/sessions/sadhana" 2>/dev/null
+    { print -r -- "$(_dl_total) $_dl_level $_dl_hints" > "$PROMPT_HOME/sessions/sadhana" } 2>/dev/null
 }
 # The banner greets by title from level 2 on — day one shows nothing new.
 _dl_titlestr() {
@@ -156,7 +156,7 @@ _dl_preexec() {
     if zstat -A st +mtime "$p" 2>/dev/null; then
         _dl_gap=$(( ${EPOCHSECONDS:-st[1]} - st[1] ))
     fi
-    : >| "$p" 2>/dev/null
+    { : >| "$p" } 2>/dev/null
 }
 _dl_precmd() {
     (( _dl_ran )) || return 0

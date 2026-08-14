@@ -444,7 +444,7 @@ _lab_precmd() {
     _lab_evolve
     _lab_last_at=${EPOCHSECONDS:-0}
 }
-_lab_save() { print -r -- $(_lab_total) > "$PROMPT_HOME/sadhana" 2>/dev/null }
+_lab_save() { { print -r -- $(_lab_total) > "$PROMPT_HOME/sadhana" } 2>/dev/null }
 
 typeset -g _lab_rprompt_saved=''
 typeset -gi _lab_on=0 _lab_wild=0
@@ -476,7 +476,7 @@ lab() {
                 local fk=$REPLY stamp="$PROMPT_HOME/sessions/festival.stamp"
                 local today=${(%):-%D{%Y-%m-%d}}
                 if [[ ! -r $stamp || "$(<$stamp)" != $today ]]; then
-                    print -r -- $today > $stamp 2>/dev/null
+                    { print -r -- $today > $stamp } 2>/dev/null
                     _lab_fx_play $fk
                 else
                     _lab_fx_banner $fk

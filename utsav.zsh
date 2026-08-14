@@ -583,7 +583,7 @@ _utsav_day() {   # what a shell runs on a festival morning — stamp-aware
     local k=$REPLY stamp="$PROMPT_HOME/sessions/festival.stamp"
     local today=${(%):-%D{%Y-%m-%d}}
     if [[ ! -r $stamp || "$(<$stamp)" != $today ]]; then
-        print -r -- $today > $stamp 2>/dev/null
+        { print -r -- $today > $stamp } 2>/dev/null
         _utsav_grand_play $k          # first shell of the day: the showpiece
     else
         _ufx_banner $k                # every later shell: the quiet banner

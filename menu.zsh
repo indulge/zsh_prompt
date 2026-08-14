@@ -116,17 +116,17 @@ _thm_menu() {
                 [1-9]) local -i jmp=$REPLY; (( jmp <= n )) && sel=jmp ;;
                 g|G)
                     (( _prompt_glow ^= 1 )) || :
-                    print -r -- $_prompt_glow > "$PROMPT_HOME/glow" 2>/dev/null
+                    { print -r -- $_prompt_glow > "$PROMPT_HOME/glow" } 2>/dev/null
                     efx=1 ;;
                 f|F)   # the उत्सव browser — opened after the alt screen restores
                     (( $+functions[_utsav_panel] )) && { fest=1; break } ;;
                 p|P)
                     (( PROMPT_FULL_PATHS = ! PROMPT_FULL_PATHS )) || :
-                    print -r -- ${PROMPT_FULL_PATHS:-0} > "$PROMPT_HOME/fullpaths" 2>/dev/null
+                    { print -r -- ${PROMPT_FULL_PATHS:-0} > "$PROMPT_HOME/fullpaths" } 2>/dev/null
                     efx=1 ;;
                 n|N)
                     (( _prompt_nerd ^= 1 )) || :
-                    print -r -- $_prompt_nerd > "$PROMPT_HOME/nerd" 2>/dev/null
+                    { print -r -- $_prompt_nerd > "$PROMPT_HOME/nerd" } 2>/dev/null
                     _pr_glyphs
                     efx=1 ;;
                 $'\r'|$'\n') applied=1; break ;;

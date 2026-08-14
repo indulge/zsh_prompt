@@ -14,6 +14,11 @@
 # Resolve the directory this file lives in (so it works from any install path).
 typeset -g PROMPT_HOME="${${(%):-%x}:A:h}"
 
+# Per-machine runtime state (pulse, sadhana, festival stamps) lives in
+# sessions/ — git-ignored, so a fresh clone ships without it. Recreate it
+# before any module that writes there is sourced.
+[[ -d "$PROMPT_HOME/sessions" ]] || command mkdir -p -- "$PROMPT_HOME/sessions" 2>/dev/null
+
 zmodload -F zsh/datetime b:strftime 2>/dev/null
 zmodload zsh/datetime 2>/dev/null
 autoload -Uz add-zsh-hook vcs_info
@@ -385,7 +390,7 @@ _prompt_use() {
     _prompt_glowify
     _prompt_apply_lscolors $name
     _prompt_current=$name
-    print -r -- "$name" > "$PROMPT_HOME/current" 2>/dev/null
+    { print -r -- "$name" > "$PROMPT_HOME/current" } 2>/dev/null
 }
 
 _prompt_list() {
@@ -428,7 +433,7 @@ theme() {
                 off) _prompt_glow=0 ;;
                 *)   (( _prompt_glow ^= 1 )) || : ;;
             esac
-            print -r -- $_prompt_glow > "$PROMPT_HOME/glow" 2>/dev/null
+            { print -r -- $_prompt_glow > "$PROMPT_HOME/glow" } 2>/dev/null
             _prompt_use "$_prompt_current"
             if (( _prompt_glow )); then print -P "%F{220}✨ glow on%f — bold prompt & file colors"
             else print -P "%F{242}glow off%f"; fi
@@ -439,7 +444,7 @@ theme() {
                 off) _prompt_nerd=0 ;;
                 *)   (( _prompt_nerd ^= 1 )) || : ;;
             esac
-            print -r -- $_prompt_nerd > "$PROMPT_HOME/nerd" 2>/dev/null
+            { print -r -- $_prompt_nerd > "$PROMPT_HOME/nerd" } 2>/dev/null
             _pr_glyphs
             _prompt_use "$_prompt_current"
             if (( _prompt_nerd )); then print -P "%F{117}${_pr_g[on]} nerd icons on%f — needs a patched font (e.g. JetBrainsMono Nerd Font)"
