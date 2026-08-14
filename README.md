@@ -24,6 +24,39 @@ The installer adds one managed block to your `~/.zshrc` (idempotent — safe to
 re-run). Restart the shell, or `source ~/.zshrc`. To start on a particular
 theme: `~/.prompt/install.sh peacock`.
 
+### …or with a plugin manager
+
+The repo also ships `playful-zsh.plugin.zsh`, so if you already run a manager
+it loads like any other plugin — nothing to clone by hand, nothing appended to
+your `~/.zshrc`:
+
+```sh
+zgenom load indulge/playful-zsh          # zgenom
+antidote bundle indulge/playful-zsh      # antidote
+zinit light indulge/playful-zsh          # zinit
+antigen bundle indulge/playful-zsh       # antigen
+zplug "indulge/playful-zsh"              # zplug
+```
+
+For sheldon, `[plugins.playful-zsh]` with `github = "indulge/playful-zsh"`.
+
+Oh-My-Zsh takes the usual two steps — its plugin directory has to be named
+after the plugin file:
+
+```sh
+git clone https://github.com/indulge/playful-zsh.git \
+  "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/playful-zsh"
+```
+
+then `plugins=(… playful-zsh)` **and `ZSH_THEME=""`** in your `~/.zshrc` —
+Oh-My-Zsh sources its own theme after the plugin list, so left set it paints
+straight over ours.
+
+Either way `theme`, `shlok` and `utsav` behave identically. Managers that
+unload plugins (`zinit unload indulge/playful-zsh`) find a real
+`playful-zsh_plugin_unload`: hooks, both chords, the prompt and your file
+colors go back to exactly what they were before we loaded.
+
 Works out of the box on macOS (zsh is the default shell), Linux, and WSL2 —
 in iTerm2, Terminal.app, tmux, or any 256-color terminal. Nothing is compiled,
 so x86 and ARM are the same bytes.
@@ -222,3 +255,7 @@ quiet.
 ```sh
 ~/.prompt/uninstall.sh   # removes the block from ~/.zshrc; files stay
 ```
+
+Installed as a plugin, drop it from your manager's config as you would any
+other bundle — and to take it out of a shell you're already sitting in,
+without restarting, `playful-zsh_plugin_unload`.

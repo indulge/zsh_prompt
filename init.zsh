@@ -453,7 +453,14 @@ theme() {
         *)        _prompt_use "$1" ;;
     esac
 }
-compdef '_arguments "1:theme:(list gallery random glow nerd ${(k)_prompt_themes})"' theme 2>/dev/null
+# Tab-completion for `theme`. Plugin managers load us before compinit has run
+# (oh-my-zsh calls it after the plugin list), so compdef may not exist yet —
+# _pr_rebind_once re-offers this at the first prompt, when it certainly does.
+_prompt_compdef() {
+    (( $+functions[compdef] )) || return 0
+    compdef '_arguments "1:theme:(list gallery random glow nerd ${(k)_prompt_themes})"' theme
+}
+_prompt_compdef
 
 # ── activate saved theme (or default) ───────────────────────────────────────
 [[ -f "$PROMPT_HOME/current" ]] && _prompt_current=$(<"$PROMPT_HOME/current")
@@ -503,9 +510,12 @@ typeset -f _utsav_arm_ambient >/dev/null && _utsav_arm_ambient
 
 # Late-loading plugins (vi-mode and friends) rebuild keymaps and silently wipe
 # widget bindings. Re-assert our two chords at the FIRST prompt — after the
-# whole ~/.zshrc, plugins included, has finished loading.
+# whole ~/.zshrc, plugins included, has finished loading. compinit lands in
+# that window too when a plugin manager loaded us, so `theme` completion is
+# registered here as well.
 _pr_rebind_once() {
     add-zsh-hook -d precmd _pr_rebind_once
+    _prompt_compdef
     [[ -o zle ]] || return 0
     if (( $+functions[_shlok_widget] )); then
         zle -N shlok-random _shlok_widget
